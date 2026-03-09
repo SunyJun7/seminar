@@ -48,7 +48,59 @@ function submitForm() {
     }
   }
 
-  // 모든 필수 항목 입력 완료 → API 전송
+  // 연락처 형식 검사 (예: 010-1234-5678 / 02-123-4567)
+  const phoneEl = document.getElementById('phone');
+  if (!/^0\d{1,2}-\d{3,4}-\d{4}$/.test(phoneEl.value.trim())) {
+    phoneEl.classList.add('error-field');
+    showModal('올바른 <strong>연락처 형식</strong>이 아닙니다.<br><small style="color:#888;">예) 010-1234-5678</small>', 'phone');
+    return;
+  }
+
+  // 이메일 형식 검사
+  const emailEl = document.getElementById('email');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim())) {
+    emailEl.classList.add('error-field');
+    showModal('올바른 <strong>이메일 형식</strong>이 아닙니다.<br><small style="color:#888;">예) example@company.com</small>', 'email');
+    return;
+  }
+
+  // 모든 검증 통과 → 입력 내용 확인 팝업 표시
+  showConfirmModal();
+}
+
+// 입력 내용 확인 팝업 열기
+function showConfirmModal() {
+  const interestChecked = Array.from(
+    document.querySelectorAll('input[name="interest"]:checked')
+  ).map(el => el.value);
+
+  const rows = [
+    { label: '이름',    value: document.getElementById('name').value.trim() },
+    { label: '회사명',  value: document.getElementById('company').value.trim() },
+    { label: '직책',    value: document.getElementById('position').value.trim() },
+    { label: '연락처',  value: document.getElementById('phone').value.trim() },
+    { label: '이메일',  value: document.getElementById('email').value.trim() },
+    { label: '관심분야', value: interestChecked.length ? interestChecked.join(', ') : '-' },
+  ];
+
+  document.getElementById('confirmTable').innerHTML = rows.map(r => `
+    <div class="confirm-row">
+      <span class="confirm-label">${r.label}</span>
+      <span class="confirm-value">${escapeHtml(r.value)}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('confirmOverlay').classList.add('active');
+}
+
+// 입력 내용 확인 팝업 닫기 (수정 버튼)
+function closeConfirmModal() {
+  document.getElementById('confirmOverlay').classList.remove('active');
+}
+
+// 확인 버튼 → 실제 API 전송
+function confirmSubmit() {
+  closeConfirmModal();
   sendToServer();
 }
 
@@ -112,6 +164,15 @@ function closeModal() {
   }
 }
 
+// HTML 특수문자 이스케이프 (확인 팝업 XSS 방지)
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 // 입력 시 error 스타일 자동 해제
 REQUIRED_FIELDS.forEach(f => {
   const el = document.getElementById(f.id);
@@ -123,4 +184,8 @@ REQUIRED_FIELDS.forEach(f => {
 // 모달 외부 클릭 시 닫기
 document.getElementById('modalOverlay').addEventListener('click', function (e) {
   if (e.target === this) closeModal();
+});
+
+document.getElementById('confirmOverlay').addEventListener('click', function (e) {
+  if (e.target === this) closeConfirmModal();
 });

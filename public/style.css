@@ -323,6 +323,81 @@ body {
   background: #283593;
 }
 
+/* ── 확인 팝업 ── */
+.confirm-box {
+  width: 400px;
+  max-width: 90vw;
+  text-align: left;
+}
+
+.confirm-box .modal-title {
+  text-align: center;
+}
+
+.confirm-box .modal-msg {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.confirm-table {
+  border: 1.5px solid #e8eaf6;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.confirm-row {
+  display: flex;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+
+.confirm-row:last-child {
+  border-bottom: none;
+}
+
+.confirm-label {
+  flex: 0 0 72px;
+  padding: 10px 12px;
+  background: #f5f7fa;
+  color: #555;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.confirm-value {
+  flex: 1;
+  padding: 10px 12px;
+  color: #333;
+  word-break: break-all;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.confirm-actions .btn-modal-ok,
+.confirm-actions .btn-modal-edit {
+  flex: 1;
+  padding: 12px;
+}
+
+.btn-modal-edit {
+  background: transparent;
+  color: #1a237e;
+  border: 2px solid #1a237e;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-modal-edit:hover {
+  background: #f0f2ff;
+}
+
 /* ── 성공/실패 페이지 ── */
 .result-card {
   background: #fff;
