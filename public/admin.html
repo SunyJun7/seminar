@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>관리자 | 신청자 목록</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* 관리자 페이지 전용 스타일 */
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .admin-header h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a237e;
+    }
+    .admin-header .count {
+      font-size: 14px;
+      color: #888;
+      margin-top: 4px;
+    }
+    .btn-export {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #1b5e20;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-export:hover { background: #2e7d32; }
+
+    /* 테이블 */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      font-size: 14px;
+    }
+    thead tr {
+      background: #1a237e;
+      color: #fff;
+    }
+    thead th {
+      padding: 12px 14px;
+      text-align: left;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+    tbody tr {
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.15s;
+    }
+    tbody tr:hover { background: #f5f7ff; }
+    tbody td {
+      padding: 11px 14px;
+      color: #333;
+      vertical-align: middle;
+    }
+    tbody td.no { color: #aaa; font-size: 12px; }
+
+    /* 빈 상태 */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #aaa;
+      font-size: 15px;
+    }
+
+    /* 로딩 */
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" style="max-width:1000px;">
+
+    <div class="admin-header">
+      <div>
+        <!-- ✏️ [수정] 관리자 페이지 제목 -->
+        <h2>신청자 목록</h2>
+        <div class="count" id="countText">불러오는 중...</div>
+      </div>
+      <!-- Excel 다운로드 버튼 - /api/export 로 연결됨 (수정 불필요) -->
+      <a href="/api/export" class="btn-export">
+        📥 Excel 다운로드
+      </a>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <!-- ✏️ [수정] 컬럼 헤더명 변경 가능 -->
+            <th>No</th>
+            <th>이름</th>
+            <th>회사명</th>
+            <th>직책</th>
+            <th>연락처</th>
+            <th>이메일</th>
+            <th>관심분야</th>
+            <th>신청일시</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr>
+            <td colspan="8" class="loading">데이터를 불러오는 중입니다...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="text-align:center; margin-top:20px;">
+      <a href="index.html" style="color:#888; font-size:13px; text-decoration:none;">← 메인으로</a>
+    </div>
+
+  </div>
+
+  <script>
+    // 신청자 목록 불러오기
+    async function loadRegistrations() {
+      try {
+        const res  = await fetch('/api/registrations');
+        const data = await res.json();
+        const tbody = document.getElementById('tableBody');
+        const countEl = document.getElementById('countText');
+
+        if (!Array.isArray(data) || data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="empty-state">아직 신청자가 없습니다.</td></tr>`;
+          countEl.textContent = '총 0명';
+          return;
+        }
+
+        countEl.textContent = `총 ${data.length}명`;
+
+        tbody.innerHTML = data.map((row, i) => `
+          <tr>
+            <td class="no">${i + 1}</td>
+            <td>${escape(row.name)}</td>
+            <td>${escape(row.company)}</td>
+            <td>${escape(row.position)}</td>
+            <td>${escape(row.phone)}</td>
+            <td>${escape(row.email)}</td>
+            <td>${escape(row.interest || '-')}</td>
+            <td>${new Date(row.created_at).toLocaleString('ko-KR')}</td>
+          </tr>
+        `).join('');
+
+      } catch {
+        document.getElementById('tableBody').innerHTML =
+          `<tr><td colspan="8" class="empty-state">데이터를 불러오지 못했습니다.<br>서버 연결을 확인해 주세요.</td></tr>`;
+      }
+    }
+
+    // XSS 방지: 특수문자 이스케이프
+    function escape(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    loadRegistrations();
+  </script>
+</body>
+</html>

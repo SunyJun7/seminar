@@ -1,5 +1,5 @@
 // =============================================================
-// ⚠️ 이 파일은 폼 검증 로직입니다.
+// ⚠️ 이 파일은 폼 검증 및 API 전송 로직입니다.
 //
 // ✏️ [수정 가능] REQUIRED_FIELDS 의 label 값
 //    → 팝업에 표시되는 항목명을 바꾸고 싶을 때만 수정
@@ -27,11 +27,13 @@ const REQUIRED_FIELDS = [
 let pendingFocusId = null;
 
 function submitForm() {
+  // 모든 필드 error 스타일 초기화
   REQUIRED_FIELDS.forEach(f => {
     const el = document.getElementById(f.id);
     if (el) el.classList.remove('error-field');
   });
 
+  // 위→아래 순서로 첫 번째 미입력 필드 탐색
   for (const field of REQUIRED_FIELDS) {
     const el = document.getElementById(field.id);
     if (!el) continue;
@@ -40,15 +42,52 @@ function submitForm() {
       field.type === 'checkbox' ? !el.checked : el.value.trim() === '';
 
     if (isEmpty) {
-      if (field.type !== 'checkbox') {
-        el.classList.add('error-field');
-      }
+      if (field.type !== 'checkbox') el.classList.add('error-field');
       showModal(`<strong>${field.label}</strong> 항목을 입력해주세요.`, field.id);
       return;
     }
   }
 
-  window.location.href = 'success.html';
+  // 모든 필수 항목 입력 완료 → API 전송
+  sendToServer();
+}
+
+// 서버 API로 신청 데이터 전송
+async function sendToServer() {
+  // 버튼 비활성화 (중복 클릭 방지)
+  const btn = document.querySelector('.btn-primary');
+  btn.disabled    = true;
+  btn.textContent = '신청 중...';
+
+  // 관심분야 체크된 항목 수집 (쉼표로 구분)
+  const interestChecked = Array.from(
+    document.querySelectorAll('input[name="interest"]:checked')
+  ).map(el => el.value);
+
+  const payload = {
+    name:     document.getElementById('name').value.trim(),
+    company:  document.getElementById('company').value.trim(),
+    position: document.getElementById('position').value.trim(),
+    phone:    document.getElementById('phone').value.trim(),
+    email:    document.getElementById('email').value.trim(),
+    interest: interestChecked.join(', ')
+  };
+
+  try {
+    const res = await fetch('/api/register', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      globalThis.location.href = 'success.html'; // 성공 → 완료 페이지
+    } else {
+      globalThis.location.href = 'error.html';   // 실패 → 오류 페이지
+    }
+  } catch {
+    globalThis.location.href = 'error.html';     // 네트워크 오류 → 오류 페이지
+  }
 }
 
 function showModal(message, focusId) {
@@ -73,6 +112,7 @@ function closeModal() {
   }
 }
 
+// 입력 시 error 스타일 자동 해제
 REQUIRED_FIELDS.forEach(f => {
   const el = document.getElementById(f.id);
   if (!el) return;
@@ -80,6 +120,7 @@ REQUIRED_FIELDS.forEach(f => {
   el.addEventListener(event, () => el.classList.remove('error-field'));
 });
 
+// 모달 외부 클릭 시 닫기
 document.getElementById('modalOverlay').addEventListener('click', function (e) {
   if (e.target === this) closeModal();
 });
