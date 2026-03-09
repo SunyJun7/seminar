@@ -85,6 +85,12 @@ body {
   color: #1a237e;
 }
 
+.info-card .value-sub {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
 /* ── 버튼 ── */
 .btn-primary {
   display: block;

@@ -3,49 +3,82 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ✏️ [수정] 브라우저 탭에 표시되는 제목 -->
   <title>AI 기반 실시간 데이터 플랫폼 세미나</title>
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
 
+    <!-- ====================================================
+         상단 히어로 배너
+         배경색은 style.css의 .landing-hero 에서 변경 가능
+    ===================================================== -->
     <div class="landing-hero">
+
+      <!-- ✏️ [수정] 배너 상단 작은 뱃지 텍스트 -->
       <div class="badge">SEMINAR 2026</div>
+
+      <!-- ✏️ [수정] 세미나 메인 제목 -->
       <h1>AI 기반 실시간 데이터 플랫폼 세미나</h1>
-      <p style="margin-top:20px; opacity:0.7; font-size:13px;">최신 AI 기술과 실시간 데이터 플랫폼의 미래를<br>업계 전문가들과 함께 탐구하는 자리입니다.</p>
+
+      <!-- ✏️ [수정] 세미나 한 줄 소개 문구 (줄바꿈은 <br> 로 표시) -->
+      <p style="margin-top:20px; opacity:0.7; font-size:13px;">
+        최신 AI 기술과 실시간 데이터 플랫폼의 미래를<br>업계 전문가들과 함께 탐구하는 자리입니다.
+      </p>
+
     </div>
 
+    <!-- ====================================================
+         행사 정보 카드 목록
+         카드를 추가하려면 아래 <div class="info-card"> 블록을
+         통째로 복사해서 붙여넣으면 됩니다.
+    ===================================================== -->
     <div class="info-cards">
+
+      <!-- 📅 일시 카드 -->
       <div class="info-card">
-        <div class="icon">📅</div>
+        <div class="icon">📅</div>  <!-- ✏️ [수정] 아이콘 이모지 변경 가능 -->
         <div>
-          <div class="label">일시</div>
-          <div class="value">2026년 4월 15일 (수) 14:00 ~ 17:00</div>
+          <div class="label">일시</div>  <!-- ✏️ [수정] 카드 라벨 -->
+          <div class="value">2026년 4월 28일 (화) 14:00 ~ 16:30</div>  <!-- ✏️ [수정] 날짜·시간 -->
         </div>
       </div>
+
+      <!-- 📍 장소 카드 (상세주소는 작은 글씨로 표시) -->
       <div class="info-card">
         <div class="icon">📍</div>
         <div>
           <div class="label">장소</div>
-          <div class="value">서울 강남 컨퍼런스센터</div>
+          <div class="value">양재 엘타워 옆 스포타임</div>  <!-- ✏️ [수정] 장소명 (굵은 글씨) -->
+          <div class="value-sub">서초구 강남대로 213번지(양재동 24), 엘타워 스포타임 5층 (주차가능)</div>  <!-- ✏️ [수정] 상세주소 (작은 글씨) -->
         </div>
       </div>
+
+      <!-- 👥 대상 카드 -->
       <div class="info-card">
         <div class="icon">👥</div>
         <div>
           <div class="label">대상</div>
-          <div class="value">AI · 데이터 · IoT · 플랫폼 분야 종사자</div>
+          <div class="value">AI · 데이터 · IoT · 플랫폼 분야 종사자</div>  <!-- ✏️ [수정] 참석 대상 -->
         </div>
       </div>
+
+      <!-- 🎟️ 참가비 카드 -->
       <div class="info-card">
         <div class="icon">🎟️</div>
         <div>
           <div class="label">참가비</div>
-          <div class="value">무료 (사전 신청 필수)</div>
+          <div class="value">무료 (사전 신청 필수)</div>  <!-- ✏️ [수정] 참가비 안내 -->
         </div>
       </div>
-    </div>
 
+    </div>
+    <!-- // 행사 정보 카드 끝 -->
+
+    <!-- ✏️ [수정] 신청 버튼 텍스트 (→ 기호는 화살표 장식, 지워도 됨) -->
     <a href="register.html" class="btn-primary">참석 신청하기 →</a>
 
   </div>
