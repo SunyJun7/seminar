@@ -1,0 +1,354 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  background-color: #f5f7fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* ── 공통 레이아웃 ── */
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* ── 랜딩페이지 ── */
+.landing-hero {
+  background: linear-gradient(135deg, #1a237e, #283593);
+  color: #fff;
+  border-radius: 16px;
+  padding: 56px 40px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.landing-hero .badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 4px 16px;
+  font-size: 13px;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.landing-hero h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  word-break: keep-all;
+}
+
+.landing-hero p {
+  font-size: 15px;
+  opacity: 0.85;
+  margin-bottom: 8px;
+}
+
+.info-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.info-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.info-card .icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.info-card .label {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.info-card .value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a237e;
+}
+
+/* ── 버튼 ── */
+.btn-primary {
+  display: block;
+  width: 100%;
+  background: #1a237e;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-primary:hover {
+  background: #283593;
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: inline-block;
+  background: transparent;
+  color: #1a237e;
+  border: 2px solid #1a237e;
+  border-radius: 10px;
+  padding: 12px 32px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #1a237e;
+  color: #fff;
+}
+
+/* ── 신청 폼 ── */
+.form-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 36px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.form-card h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a237e;
+  margin-bottom: 8px;
+}
+
+.form-card .subtitle {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 32px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 6px;
+}
+
+.form-group label .required {
+  color: #e53935;
+  margin-left: 2px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #333;
+  background: #fafafa;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: #1a237e;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(26,35,126,0.1);
+}
+
+.form-group input.error-field {
+  border-color: #e53935;
+  background: #fff8f8;
+}
+
+/* 관심분야 체크박스 */
+.interest-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.interest-grid label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 10px 12px;
+  border: 1.5px solid #eee;
+  border-radius: 8px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.interest-grid label:hover {
+  border-color: #1a237e;
+  background: #f0f2ff;
+}
+
+.interest-grid input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #1a237e;
+}
+
+/* 개인정보 동의 */
+.privacy-box {
+  background: #f5f7fa;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 10px;
+  line-height: 1.7;
+}
+
+.privacy-agree {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.privacy-agree input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #1a237e;
+  cursor: pointer;
+}
+
+/* ── 모달 팝업 ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px 32px 28px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.modal-box .modal-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.modal-box .modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a237e;
+  margin-bottom: 8px;
+}
+
+.modal-box .modal-msg {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.modal-box .btn-modal-ok {
+  background: #1a237e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 40px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modal-box .btn-modal-ok:hover {
+  background: #283593;
+}
+
+/* ── 성공/실패 페이지 ── */
+.result-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 64px 40px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.result-card .result-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.result-card h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.result-card p {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.result-card.success h2 { color: #1a237e; }
+.result-card.error h2   { color: #e53935; }
+
+.result-actions {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}

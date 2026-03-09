@@ -1,0 +1,13 @@
+{
+  "name": "seminar-registration",
+  "version": "1.0.0",
+  "description": "세미나 초대 및 등록 시스템",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
