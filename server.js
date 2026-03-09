@@ -44,6 +44,53 @@ async function initDB() {
 }
 
 app.use(express.json());
+
+// =============================================================
+// 관리자 인증 미들웨어 (HTTP Basic Auth)
+// 보호 대상: /admin.html, /api/registrations, /api/export
+//
+// 인증 방식:
+//   브라우저가 요청 → 서버가 401 반환 → 브라우저가 ID/PW 팝업 표시
+//   → 입력값을 Base64로 인코딩해서 재요청 → 서버가 환경변수와 대조
+//
+// ID/PW 설정 위치:
+//   Railway 대시보드 → 웹 서비스 → Variables 탭
+//   ADMIN_ID = sgadmin
+//   ADMIN_PW = ad1234!
+// =============================================================
+function adminAuth(req, res, next) {
+  const authHeader = req.headers['authorization'];
+
+  // Authorization 헤더가 없거나 Basic 방식이 아니면 인증 요구
+  if (!authHeader?.startsWith('Basic ')) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="Admin Area"');
+    return res.status(401).send('관리자 인증이 필요합니다.');
+  }
+
+  // Base64 디코딩 후 ID:PW 분리
+  const decoded = Buffer.from(authHeader.slice(6), 'base64').toString('utf-8');
+  const colonIdx = decoded.indexOf(':');
+  const inputId  = decoded.slice(0, colonIdx);
+  const inputPw  = decoded.slice(colonIdx + 1);
+
+  // 환경변수에 저장된 ID/PW와 대조
+  const validId = process.env.ADMIN_ID;
+  const validPw = process.env.ADMIN_PW;
+
+  if (inputId === validId && inputPw === validPw) {
+    next(); // 인증 성공 → 다음 처리로 진행
+  } else {
+    res.setHeader('WWW-Authenticate', 'Basic realm="Admin Area"');
+    return res.status(401).send('아이디 또는 비밀번호가 올바르지 않습니다.');
+  }
+}
+
+// /admin.html 은 인증 후에만 제공 (express.static 보다 먼저 처리)
+app.get('/admin.html', adminAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// 일반 정적 파일 서빙 (index.html, register.html 등 인증 불필요)
 app.use(express.static(path.join(__dirname, 'public')));
 
 // =============================================================
@@ -82,7 +129,7 @@ app.post('/api/register', async (req, res) => {
 // 관리자 페이지에서 신청자 목록을 불러올 때 사용합니다.
 // 반환: 신청자 배열 (JSON)
 // -------------------------------------------------------------
-app.get('/api/registrations', async (req, res) => {
+app.get('/api/registrations', adminAuth, async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT * FROM seminar_registrations ORDER BY created_at DESC'
@@ -99,7 +146,7 @@ app.get('/api/registrations', async (req, res) => {
 // 신청자 전체 목록을 Excel 파일로 다운로드합니다.
 // 파일명: seminar_registrations.xlsx
 // -------------------------------------------------------------
-app.get('/api/export', async (req, res) => {
+app.get('/api/export', adminAuth, async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT * FROM seminar_registrations ORDER BY created_at ASC'
