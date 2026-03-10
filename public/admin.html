@@ -41,7 +41,7 @@
       transition: background 0.2s;
     }
     .btn-export:hover { background: #2e7d32; }
-    .btn-send {
+    .btn-copy {
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -55,17 +55,8 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    .btn-send:hover:not(:disabled) { background: #283593; }
-    .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
-    .send-result {
-      margin-top: 12px;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      display: none;
-    }
-    .send-result.success { background: #e8f5e9; color: #2e7d32; }
-    .send-result.error   { background: #ffebee; color: #c62828; }
+    .btn-copy:hover { background: #283593; }
+    .btn-copy.copied { background: #2e7d32; }
 
     /* 자료 업로드 섹션 */
     .upload-section {
@@ -180,9 +171,9 @@
         <a href="/api/export" class="btn-export">
           📥 Excel 다운로드
         </a>
-        <!-- 감사 이메일 일괄 발송 -->
-        <button class="btn-send" id="btnSendThanks" onclick="sendThanksEmail()">
-          📧 감사 이메일 발송
+        <!-- 이메일 전체 복사 -->
+        <button class="btn-copy" id="btnCopyEmails">
+          📋 이메일 전체 복사
         </button>
       </div>
     </div>
@@ -209,8 +200,6 @@
         </tbody>
       </table>
     </div>
-
-    <div id="sendResult" class="send-result"></div>
 
     <div style="text-align:center; margin-top:20px;">
       <a href="index.html" style="color:#888; font-size:13px; text-decoration:none;">← 메인으로</a>

@@ -1,3 +1,5 @@
+let registrations = [];
+
 // 신청자 목록 불러오기
 async function loadRegistrations() {
   try {
@@ -12,6 +14,7 @@ async function loadRegistrations() {
       return;
     }
 
+    registrations = data;
     countEl.textContent = `총 ${data.length}명`;
 
     tbody.innerHTML = data.map((row, i) => `
@@ -121,38 +124,26 @@ async function deleteFile(filename) {
   }
 }
 
-// 감사 이메일 일괄 발송
-async function sendThanksEmail() {
-  const countText = document.getElementById('countText').textContent;
-  const confirmed = confirm(`${countText}에게 감사 이메일을 발송합니다.\n계속하시겠습니까?`);
-  if (!confirmed) return;
-
-  const btn    = document.getElementById('btnSendThanks');
-  const result = document.getElementById('sendResult');
-  btn.disabled    = true;
-  btn.textContent = '발송 중...';
-  result.style.display = 'none';
-
-  try {
-    const res  = await fetch('/api/send-thanks', { method: 'POST' });
-    const data = await res.json();
-
-    if (res.ok && data.success) {
-      result.className     = 'send-result success';
-      result.textContent   = `발송 완료 — 성공: ${data.sent}건, 실패: ${data.failed}건`;
-    } else {
-      result.className     = 'send-result error';
-      result.textContent   = `오류: ${data.message || '이메일 발송에 실패했습니다.'}`;
-    }
-  } catch {
-    result.className   = 'send-result error';
-    result.textContent = '서버 연결 오류가 발생했습니다.';
+// 이메일 전체 복사 (세미콜론 구분 — Outlook/Gmail BCC 바로 붙여넣기 가능)
+function copyEmails() {
+  if (registrations.length === 0) {
+    alert('신청자가 없습니다.');
+    return;
   }
 
-  result.style.display = 'block';
-  btn.disabled    = false;
-  btn.textContent = '📧 감사 이메일 발송';
+  const emails = registrations.map(r => r.email).join('; ');
+  navigator.clipboard.writeText(emails).then(() => {
+    const btn = document.getElementById('btnCopyEmails');
+    btn.textContent = '✅ 복사됨!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '📋 이메일 전체 복사';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
 }
+
+document.getElementById('btnCopyEmails').addEventListener('click', copyEmails);
 
 document.getElementById('btnUpload').addEventListener('click', () => {
   document.getElementById('fileInput').click();

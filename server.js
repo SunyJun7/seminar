@@ -9,7 +9,6 @@ const crypto       = require('crypto');             // 타이밍 안전 비교
 const helmet       = require('helmet');             // 보안 헤더
 const rateLimit    = require('express-rate-limit'); // 요청 횟수 제한
 const multer       = require('multer');             // 파일 업로드
-const nodemailer   = require('nodemailer');         // 이메일 발송
 const { Pool }     = require('pg');                 // PostgreSQL 연결
 const ExcelJS      = require('exceljs');            // Excel 파일 생성
 
@@ -337,91 +336,6 @@ app.delete('/api/files/:filename', adminLimiter, adminAuth, (req, res) => {
   });
 });
 
-// -------------------------------------------------------------
-// POST /api/send-thanks
-// 전체 신청자에게 감사 이메일 + 자료 다운로드 링크를 일괄 발송합니다.
-// 반환: { success: true, sent: N, failed: N }
-// -------------------------------------------------------------
-app.post('/api/send-thanks', adminLimiter, adminAuth, async (req, res) => {
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
-  const siteUrl  = (process.env.SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
-
-  if (!smtpUser || !smtpPass) {
-    return res.status(500).json({ success: false, message: 'SMTP_USER 또는 SMTP_PASS 환경변수가 설정되지 않았습니다.' });
-  }
-
-  // ✏️ [수정 가능] 다운로드 링크 목록 — public/downloads/ 안의 파일명으로 작성
-  const downloadLinks = [
-    // { label: '세미나 발표자료', file: '세미나_발표자료.pdf' },
-    // { label: '참고 자료',       file: '참고자료.pdf' },
-  ];
-
-  const linksHtml = downloadLinks.length
-    ? `<h3 style="color:#1a237e;">📎 세미나 자료 다운로드</h3><ul>` +
-      downloadLinks.map(({ label, file }) =>
-        `<li><a href="${siteUrl}/downloads/${encodeURIComponent(file)}" style="color:#1a237e;">${label}</a></li>`
-      ).join('') +
-      `</ul>`
-    : '';
-
-  // ✏️ [수정 가능] 이메일 제목 및 본문
-  const subject = '[SmartGate] 세미나 참석 감사드립니다';
-  const html = `
-    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;">
-      <h2 style="color:#1a237e;">참석해 주셔서 감사합니다!</h2>
-      <p>안녕하세요,<br>
-      SmartGate 세미나에 참석해 주셔서 진심으로 감사드립니다.<br>
-      유익한 시간이 되셨길 바랍니다.</p>
-      ${linksHtml}
-      <p style="margin-top:32px;color:#888;font-size:13px;">
-        문의 사항이 있으시면 이 메일로 회신해 주세요.
-      </p>
-    </div>
-  `;
-
-  // Nodemailer 트랜스포터 (범용 SMTP — Gmail 포함 모든 메일 서버 사용 가능)
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,               // 예) smtp.gmail.com / mail.yourdomain.com
-    port: parseInt(process.env.SMTP_PORT) || 587,
-    secure: process.env.SMTP_PORT === '465',   // 465: SSL, 587: TLS(STARTTLS)
-    auth: { user: smtpUser, pass: smtpPass }
-  });
-
-  // DB에서 전체 수신자 조회
-  let rows;
-  try {
-    const result = await pool.query('SELECT name, email FROM seminar_registrations ORDER BY id ASC');
-    rows = result.rows;
-  } catch (err) {
-    console.error('수신자 조회 오류:', err.message);
-    return res.status(500).json({ success: false, message: '수신자 목록을 불러오지 못했습니다.' });
-  }
-
-  if (rows.length === 0) {
-    return res.json({ success: true, sent: 0, failed: 0, message: '발송할 수신자가 없습니다.' });
-  }
-
-  // 각 수신자에게 발송
-  let sent = 0, failed = 0;
-  for (const row of rows) {
-    try {
-      await transporter.sendMail({
-        from: `"SmartGate 세미나" <${smtpUser}>`,
-        to:   row.email,
-        subject,
-        html
-      });
-      sent++;
-    } catch (err) {
-      console.error(`발송 실패 (${row.email}):`, err.message);
-      failed++;
-    }
-  }
-
-  console.log(`감사 이메일 발송 완료 — 성공: ${sent}, 실패: ${failed}`);
-  res.json({ success: true, sent, failed });
-});
 
 // =============================================================
 // 서버 시작 (DB 초기화 후 실행)
