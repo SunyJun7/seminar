@@ -63,9 +63,15 @@ async function loadFiles() {
           <span class="file-name">📄 ${escapeHtml(f.filename)}</span>
           <span class="file-meta">${(f.size / 1024).toFixed(0)} KB</span>
         </span>
-        <button class="btn-delete" onclick="deleteFile('${escapeHtml(f.filename)}')">삭제</button>
+        <span style="display:flex;gap:6px;">
+          <button class="btn-copylink" data-filename="${escapeHtml(f.filename)}">🔗 링크 복사</button>
+          <button class="btn-delete" data-filename="${escapeHtml(f.filename)}">삭제</button>
+        </span>
       </div>
     `).join('');
+
+    // 이벤트 위임 — 동적 생성 버튼에 인라인 onclick 없이 처리
+    el.addEventListener('click', handleFileListClick);
   } catch {
     document.getElementById('fileList').innerHTML =
       '<span style="font-size:13px;color:#c62828;">파일 목록을 불러오지 못했습니다.</span>';
@@ -106,6 +112,25 @@ async function uploadFile() {
 
   btn.disabled  = false;
   input.value   = '';
+}
+
+// 파일 목록 버튼 이벤트 위임 처리
+function handleFileListClick(e) {
+  const delBtn  = e.target.closest('.btn-delete');
+  const copyBtn = e.target.closest('.btn-copylink');
+
+  if (delBtn)  deleteFile(delBtn.dataset.filename);
+  if (copyBtn) copyFileLink(copyBtn);
+}
+
+// 파일 다운로드 링크 복사
+function copyFileLink(btn) {
+  const url = `${location.origin}/downloads/${encodeURIComponent(btn.dataset.filename)}`;
+  navigator.clipboard.writeText(url).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✅ 복사됨!';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  });
 }
 
 // 파일 삭제
