@@ -181,6 +181,11 @@ REQUIRED_FIELDS.forEach(f => {
   el.addEventListener(event, () => el.classList.remove('error-field'));
 });
 
+document.getElementById('btnSubmit').addEventListener('click', submitForm);
+document.getElementById('btnModalOk').addEventListener('click', closeModal);
+document.getElementById('btnModalEdit').addEventListener('click', closeConfirmModal);
+document.getElementById('btnConfirmOk').addEventListener('click', confirmSubmit);
+
 // 모달 외부 클릭 시 닫기
 document.getElementById('modalOverlay').addEventListener('click', function (e) {
   if (e.target === this) closeModal();

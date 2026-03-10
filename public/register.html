@@ -101,7 +101,7 @@
 
         <!-- ✏️ [수정] 신청 버튼 텍스트 -->
         <!-- ⚠️ onclick="submitForm()" 은 수정하지 마세요 -->
-        <button type="button" class="btn-primary" onclick="submitForm()">신청하기</button>
+        <button type="button" class="btn-primary" id="btnSubmit">신청하기</button>
 
       </form>
     </div>
@@ -121,7 +121,7 @@
       <div class="modal-icon">⚠️</div>
       <div class="modal-title">입력 확인</div>
       <div class="modal-msg" id="modalMsg"></div>
-      <button class="btn-modal-ok" onclick="closeModal()">확인</button>
+      <button class="btn-modal-ok" id="btnModalOk">확인</button>
     </div>
   </div>
 
@@ -136,8 +136,8 @@
       <div class="modal-msg">아래 정보로 신청하시겠습니까?</div>
       <div class="confirm-table" id="confirmTable"></div>
       <div class="confirm-actions">
-        <button class="btn-modal-edit" onclick="closeConfirmModal()">수정</button>
-        <button class="btn-modal-ok" onclick="confirmSubmit()">확인</button>
+        <button class="btn-modal-edit" id="btnModalEdit">수정</button>
+        <button class="btn-modal-ok" id="btnConfirmOk">확인</button>
       </div>
     </div>
   </div>
