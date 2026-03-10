@@ -2,10 +2,33 @@
 // 세미나 등록 시스템 - 서버
 // =============================================================
 
-const express = require('express');
-const path    = require('path');
-const { Pool } = require('pg');     // PostgreSQL 연결
-const ExcelJS  = require('exceljs'); // Excel 파일 생성
+const express      = require('express');
+const path         = require('path');
+const fs           = require('fs');                 // 파일 시스템
+const crypto       = require('crypto');             // 타이밍 안전 비교
+const helmet       = require('helmet');             // 보안 헤더
+const rateLimit    = require('express-rate-limit'); // 요청 횟수 제한
+const multer       = require('multer');             // 파일 업로드
+const nodemailer   = require('nodemailer');         // 이메일 발송
+const { Pool }     = require('pg');                 // PostgreSQL 연결
+const ExcelJS      = require('exceljs');            // Excel 파일 생성
+
+// 업로드 디렉터리 준비
+const DOWNLOADS_DIR = path.join(__dirname, 'public', 'downloads');
+if (!fs.existsSync(DOWNLOADS_DIR)) fs.mkdirSync(DOWNLOADS_DIR, { recursive: true });
+
+// multer 설정 — PDF만 허용, 파일당 50MB 제한
+const upload = multer({
+  dest: DOWNLOADS_DIR,
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter(req, file, cb) {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('PDF 파일만 업로드할 수 있습니다.'));
+    }
+  }
+});
 
 const app  = express();
 const PORT = process.env.PORT || 3000; // Railway는 PORT 환경변수를 자동 주입
@@ -43,7 +66,26 @@ async function initDB() {
   console.log('DB 테이블 준비 완료');
 }
 
+app.use(helmet());        // 보안 헤더 (X-Powered-By 제거, CSP, HSTS 등)
 app.use(express.json());
+
+// 등록 API: 분당 10회 제한 (스팸/DoS 방지)
+const registerLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.' }
+});
+
+// 관리자 API: 분당 30회 제한
+const adminLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.'
+});
 
 // =============================================================
 // 관리자 인증 미들웨어 (HTTP Basic Auth)
@@ -54,9 +96,7 @@ app.use(express.json());
 //   → 입력값을 Base64로 인코딩해서 재요청 → 서버가 환경변수와 대조
 //
 // ID/PW 설정 위치:
-//   Railway 대시보드 → 웹 서비스 → Variables 탭
-//   ADMIN_ID = sgadmin
-//   ADMIN_PW = ad1234!
+//   Railway 대시보드 → 웹 서비스 → Variables 탭에서 ADMIN_ID, ADMIN_PW 설정
 // =============================================================
 function adminAuth(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -77,7 +117,24 @@ function adminAuth(req, res, next) {
   const validId = process.env.ADMIN_ID;
   const validPw = process.env.ADMIN_PW;
 
-  if (inputId === validId && inputPw === validPw) {
+  // 환경변수 미설정 시 서버 오류 반환 (undefined 비교로 인한 인증 우회 방지)
+  if (!validId || !validPw) {
+    console.error('환경변수 ADMIN_ID 또는 ADMIN_PW가 설정되지 않았습니다.');
+    return res.status(500).send('서버 설정 오류');
+  }
+
+  // 타이밍 공격 방지: 문자 길이가 다르면 dummy 버퍼로 맞춰서 항상 일정 시간 비교
+  const idBuf    = Buffer.from(inputId);
+  const pwBuf    = Buffer.from(inputPw);
+  const validIdBuf = Buffer.from(validId);
+  const validPwBuf = Buffer.from(validPw);
+
+  const idMatch = idBuf.length === validIdBuf.length &&
+    crypto.timingSafeEqual(idBuf, validIdBuf);
+  const pwMatch = pwBuf.length === validPwBuf.length &&
+    crypto.timingSafeEqual(pwBuf, validPwBuf);
+
+  if (idMatch && pwMatch) {
     next(); // 인증 성공 → 다음 처리로 진행
   } else {
     res.setHeader('WWW-Authenticate', 'Basic realm="Admin Area"');
@@ -103,12 +160,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 성공: { success: true }
 // 실패: { success: false, message: '...' }
 // -------------------------------------------------------------
-app.post('/api/register', async (req, res) => {
+app.post('/api/register', registerLimiter, async (req, res) => {
   const { name, company, position, phone, email, interest } = req.body;
 
   // 필수 항목 서버 측 재검증 (프론트 우회 방지)
   if (!name || !company || !position || !phone || !email) {
     return res.status(400).json({ success: false, message: '필수 항목이 누락되었습니다.' });
+  }
+
+  // 연락처 형식 검증 (예: 010-1234-5678 / 02-123-4567)
+  if (!/^0\d{1,2}-\d{3,4}-\d{4}$/.test(phone)) {
+    return res.status(400).json({ success: false, message: '연락처 형식이 올바르지 않습니다.' });
+  }
+
+  // 이메일 형식 검증
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ success: false, message: '이메일 형식이 올바르지 않습니다.' });
   }
 
   try {
@@ -129,7 +196,7 @@ app.post('/api/register', async (req, res) => {
 // 관리자 페이지에서 신청자 목록을 불러올 때 사용합니다.
 // 반환: 신청자 배열 (JSON)
 // -------------------------------------------------------------
-app.get('/api/registrations', adminAuth, async (req, res) => {
+app.get('/api/registrations', adminLimiter, adminAuth, async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT * FROM seminar_registrations ORDER BY created_at DESC'
@@ -146,7 +213,7 @@ app.get('/api/registrations', adminAuth, async (req, res) => {
 // 신청자 전체 목록을 Excel 파일로 다운로드합니다.
 // 파일명: seminar_registrations.xlsx
 // -------------------------------------------------------------
-app.get('/api/export', adminAuth, async (req, res) => {
+app.get('/api/export', adminLimiter, adminAuth, async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT * FROM seminar_registrations ORDER BY created_at ASC'
@@ -199,6 +266,161 @@ app.get('/api/export', adminAuth, async (req, res) => {
     console.error('Excel 생성 오류:', err.message);
     res.status(500).json({ error: 'Excel 파일 생성에 실패했습니다.' });
   }
+});
+
+// -------------------------------------------------------------
+// POST /api/upload
+// 관리자가 PDF 파일을 서버에 업로드합니다.
+// 반환: { success: true, filename: '파일명.pdf' }
+// -------------------------------------------------------------
+app.post('/api/upload', adminLimiter, adminAuth, (req, res) => {
+  upload.single('file')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: '파일이 없습니다.' });
+    }
+
+    // multer가 임시 파일명으로 저장하므로 원래 이름으로 변경
+    const originalName = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
+    const safeName     = path.basename(originalName); // 경로 탐색 방지
+    const finalPath    = path.join(DOWNLOADS_DIR, safeName);
+
+    fs.rename(req.file.path, finalPath, (renameErr) => {
+      if (renameErr) {
+        return res.status(500).json({ success: false, message: '파일 저장에 실패했습니다.' });
+      }
+      console.log(`파일 업로드: ${safeName}`);
+      res.json({ success: true, filename: safeName });
+    });
+  });
+});
+
+// -------------------------------------------------------------
+// GET /api/files
+// 업로드된 파일 목록을 반환합니다.
+// 반환: [{ filename, size, uploadedAt }]
+// -------------------------------------------------------------
+app.get('/api/files', adminLimiter, adminAuth, (req, res) => {
+  fs.readdir(DOWNLOADS_DIR, (err, files) => {
+    if (err) return res.status(500).json({ error: '파일 목록을 불러오지 못했습니다.' });
+
+    const list = files
+      .filter(f => f !== '.gitkeep')
+      .map(f => {
+        const stat = fs.statSync(path.join(DOWNLOADS_DIR, f));
+        return { filename: f, size: stat.size, uploadedAt: stat.mtime };
+      })
+      .sort((a, b) => b.uploadedAt - a.uploadedAt);
+
+    res.json(list);
+  });
+});
+
+// -------------------------------------------------------------
+// DELETE /api/files/:filename
+// 업로드된 파일을 삭제합니다.
+// -------------------------------------------------------------
+app.delete('/api/files/:filename', adminLimiter, adminAuth, (req, res) => {
+  const safeName = path.basename(req.params.filename); // 경로 탐색 방지
+  const filePath = path.join(DOWNLOADS_DIR, safeName);
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ success: false, message: '파일을 찾을 수 없습니다.' });
+  }
+
+  fs.unlink(filePath, (err) => {
+    if (err) return res.status(500).json({ success: false, message: '파일 삭제에 실패했습니다.' });
+    console.log(`파일 삭제: ${safeName}`);
+    res.json({ success: true });
+  });
+});
+
+// -------------------------------------------------------------
+// POST /api/send-thanks
+// 전체 신청자에게 감사 이메일 + 자료 다운로드 링크를 일괄 발송합니다.
+// 반환: { success: true, sent: N, failed: N }
+// -------------------------------------------------------------
+app.post('/api/send-thanks', adminLimiter, adminAuth, async (req, res) => {
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+  const siteUrl  = (process.env.SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
+
+  if (!smtpUser || !smtpPass) {
+    return res.status(500).json({ success: false, message: 'SMTP_USER 또는 SMTP_PASS 환경변수가 설정되지 않았습니다.' });
+  }
+
+  // ✏️ [수정 가능] 다운로드 링크 목록 — public/downloads/ 안의 파일명으로 작성
+  const downloadLinks = [
+    // { label: '세미나 발표자료', file: '세미나_발표자료.pdf' },
+    // { label: '참고 자료',       file: '참고자료.pdf' },
+  ];
+
+  const linksHtml = downloadLinks.length
+    ? `<h3 style="color:#1a237e;">📎 세미나 자료 다운로드</h3><ul>` +
+      downloadLinks.map(({ label, file }) =>
+        `<li><a href="${siteUrl}/downloads/${encodeURIComponent(file)}" style="color:#1a237e;">${label}</a></li>`
+      ).join('') +
+      `</ul>`
+    : '';
+
+  // ✏️ [수정 가능] 이메일 제목 및 본문
+  const subject = '[SmartGate] 세미나 참석 감사드립니다';
+  const html = `
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;">
+      <h2 style="color:#1a237e;">참석해 주셔서 감사합니다!</h2>
+      <p>안녕하세요,<br>
+      SmartGate 세미나에 참석해 주셔서 진심으로 감사드립니다.<br>
+      유익한 시간이 되셨길 바랍니다.</p>
+      ${linksHtml}
+      <p style="margin-top:32px;color:#888;font-size:13px;">
+        문의 사항이 있으시면 이 메일로 회신해 주세요.
+      </p>
+    </div>
+  `;
+
+  // Nodemailer 트랜스포터 (범용 SMTP — Gmail 포함 모든 메일 서버 사용 가능)
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,               // 예) smtp.gmail.com / mail.yourdomain.com
+    port: parseInt(process.env.SMTP_PORT) || 587,
+    secure: process.env.SMTP_PORT === '465',   // 465: SSL, 587: TLS(STARTTLS)
+    auth: { user: smtpUser, pass: smtpPass }
+  });
+
+  // DB에서 전체 수신자 조회
+  let rows;
+  try {
+    const result = await pool.query('SELECT name, email FROM seminar_registrations ORDER BY id ASC');
+    rows = result.rows;
+  } catch (err) {
+    console.error('수신자 조회 오류:', err.message);
+    return res.status(500).json({ success: false, message: '수신자 목록을 불러오지 못했습니다.' });
+  }
+
+  if (rows.length === 0) {
+    return res.json({ success: true, sent: 0, failed: 0, message: '발송할 수신자가 없습니다.' });
+  }
+
+  // 각 수신자에게 발송
+  let sent = 0, failed = 0;
+  for (const row of rows) {
+    try {
+      await transporter.sendMail({
+        from: `"SmartGate 세미나" <${smtpUser}>`,
+        to:   row.email,
+        subject,
+        html
+      });
+      sent++;
+    } catch (err) {
+      console.error(`발송 실패 (${row.email}):`, err.message);
+      failed++;
+    }
+  }
+
+  console.log(`감사 이메일 발송 완료 — 성공: ${sent}, 실패: ${failed}`);
+  res.json({ success: true, sent, failed });
 });
 
 // =============================================================
