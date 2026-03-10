@@ -154,5 +154,10 @@ async function sendThanksEmail() {
   btn.textContent = '📧 감사 이메일 발송';
 }
 
+document.getElementById('btnUpload').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+document.getElementById('fileInput').addEventListener('change', uploadFile);
+
 loadRegistrations();
 loadFiles();
