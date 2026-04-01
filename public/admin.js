@@ -156,7 +156,7 @@ function copyEmails() {
     return;
   }
 
-  const emails = registrations.map(r => r.email).join('; ');
+  const emails = registrations.map(r => r.email).join(', ');
   navigator.clipboard.writeText(emails).then(() => {
     const btn = document.getElementById('btnCopyEmails');
     btn.textContent = '✅ 복사됨!';
