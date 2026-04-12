@@ -94,6 +94,12 @@
       font-size: 13px; padding: 2px 6px; border-radius: 4px;
     }
     .btn-copylink:hover { background: #e8eaf6; }
+    .btn-row-delete {
+      background: none; border: 1px solid #e53935; color: #e53935;
+      border-radius: 6px; padding: 3px 10px; font-size: 12px; cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-row-delete:hover { background: #ffebee; }
     .upload-msg { font-size: 13px; margin-top: 8px; }
     .upload-msg.success { color: #2e7d32; }
     .upload-msg.error   { color: #c62828; }
@@ -196,11 +202,12 @@
             <th>이메일</th>
             <th>관심분야</th>
             <th>신청일시</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="tableBody">
           <tr>
-            <td colspan="8" class="loading">데이터를 불러오는 중입니다...</td>
+            <td colspan="9" class="loading">데이터를 불러오는 중입니다...</td>
           </tr>
         </tbody>
       </table>

@@ -27,12 +27,36 @@ async function loadRegistrations() {
         <td>${escapeHtml(row.email)}</td>
         <td>${escapeHtml(row.interest || '-')}</td>
         <td>${new Date(row.created_at).toLocaleString('ko-KR')}</td>
+        <td><button class="btn-row-delete" data-id="${row.id}">삭제</button></td>
       </tr>
     `).join('');
 
+    tbody.addEventListener('click', handleTableClick);
+
   } catch {
     document.getElementById('tableBody').innerHTML =
-      `<tr><td colspan="8" class="empty-state">데이터를 불러오지 못했습니다.<br>서버 연결을 확인해 주세요.</td></tr>`;
+      `<tr><td colspan="9" class="empty-state">데이터를 불러오지 못했습니다.<br>서버 연결을 확인해 주세요.</td></tr>`;
+  }
+}
+
+// 테이블 행 클릭 이벤트 위임
+function handleTableClick(e) {
+  const btn = e.target.closest('.btn-row-delete');
+  if (btn) deleteRegistration(btn.dataset.id);
+}
+
+// 신청자 삭제
+async function deleteRegistration(id) {
+  if (!confirm('이 신청자를 삭제하시겠습니까?')) return;
+  try {
+    const res = await fetch(`/api/registrations/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      await loadRegistrations();
+    } else {
+      alert('삭제에 실패했습니다.');
+    }
+  } catch {
+    alert('오류가 발생했습니다.');
   }
 }
 

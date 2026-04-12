@@ -268,6 +268,28 @@ app.get('/api/export', adminLimiter, adminAuth, async (req, res) => {
 });
 
 // -------------------------------------------------------------
+// DELETE /api/registrations/:id
+// 신청자 한 명을 DB에서 삭제합니다. (테스트 데이터 정리용)
+// -------------------------------------------------------------
+app.delete('/api/registrations/:id', adminLimiter, adminAuth, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).json({ success: false, message: '잘못된 ID입니다.' });
+
+  try {
+    const result = await pool.query(
+      'DELETE FROM seminar_registrations WHERE id = $1', [id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, message: '해당 신청자를 찾을 수 없습니다.' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error('신청자 삭제 오류:', err.message);
+    res.status(500).json({ success: false, message: '삭제 중 오류가 발생했습니다.' });
+  }
+});
+
+// -------------------------------------------------------------
 // POST /api/upload
 // 관리자가 PDF 파일을 서버에 업로드합니다.
 // 반환: { success: true, filename: '파일명.pdf' }
