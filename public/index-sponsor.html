@@ -9,88 +9,78 @@
 
     body {
       font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
-      background: #ddf5f2;
-      min-height: 100vh;
+      background: #c8eee9;
       display: flex;
       justify-content: center;
+      padding: 40px 20px;
     }
 
     .poster {
-      width: 100%;
-      max-width: 500px;
-      min-height: 100vh;
+      width: 700px;
+      min-height: 990px;
       position: relative;
-      background: url('images/bg.png') center bottom / 100% auto no-repeat, #ddf5f2;
-      padding: 40px 36px 48px;
+      background: url('images/bg.png') right bottom / 55% auto no-repeat, #ddf5f2;
+      padding: 52px 56px 52px 52px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
     }
 
-    .label-top { font-size: 10px; color: #666; letter-spacing: 0.2px; margin-bottom: 14px; }
+    .label-top { font-size: 11px; color: #666; letter-spacing: 0.3px; margin-bottom: 20px; }
 
     .main-title {
-      font-size: clamp(20px, 6vw, 30px);
-      font-weight: 900; line-height: 1.28;
-      color: #0b1840; margin-bottom: 18px; word-break: keep-all;
+      font-size: 36px; font-weight: 900; line-height: 1.25;
+      color: #0b1840; margin-bottom: 22px; word-break: keep-all; max-width: 62%;
     }
     .main-title .hl { color: #00aac8; }
 
     .body-text {
-      font-size: clamp(10px, 2.5vw, 11px); color: #444; line-height: 1.85;
-      margin-bottom: 7px; word-break: keep-all;
+      font-size: 11px; color: #444; line-height: 1.9;
+      margin-bottom: 8px; word-break: keep-all; max-width: 60%;
     }
     .body-text b { color: #00aac8; font-weight: 700; }
 
-    .catchphrase { font-size: 13px; font-weight: 800; color: #0b1840; margin: 20px 0 24px; word-break: keep-all; }
+    .catchphrase { font-size: 14px; font-weight: 800; color: #0b1840; margin: 24px 0 28px; word-break: keep-all; }
 
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-bottom: 18px; }
-    .info-block { padding-right: 12px; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 20px; }
     .info-label {
-      font-size: 9px; font-weight: 800; color: #00aac8;
+      font-size: 10px; font-weight: 800; color: #00aac8;
       letter-spacing: 2.5px; border-bottom: 1.5px solid #00aac8;
-      padding-bottom: 5px; margin-bottom: 8px;
+      padding-bottom: 5px; margin-bottom: 9px;
     }
-    .info-value { font-size: 13px; font-weight: 800; color: #0b1840; line-height: 1.55; }
-    .info-sub { font-size: 11px; color: #555; margin-top: 3px; }
+    .info-value { font-size: 14px; font-weight: 800; color: #0b1840; line-height: 1.5; }
+    .info-sub { font-size: 12px; color: #555; margin-top: 3px; }
 
-    .reg-section { margin-bottom: 22px; }
-    .reg-value { font-size: 12.5px; font-weight: 700; color: #0b1840; margin-top: 7px; }
+    .reg-section { margin-bottom: 24px; }
+    .reg-value { font-size: 13px; font-weight: 700; color: #0b1840; margin-top: 8px; }
 
-    .schedule-section { margin-bottom: 26px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
-    tr { border-bottom: 1px solid rgba(0,170,200,0.13); }
-    td { padding: 6px 3px; vertical-align: top; }
-    td:first-child { color: #00aac8; font-weight: 700; white-space: nowrap; width: 90px; }
+    .schedule-section { margin-bottom: 32px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11.5px; }
+    tr { border-bottom: 1px solid rgba(0,170,200,0.15); }
+    td { padding: 7px 4px; vertical-align: top; }
+    td:first-child { color: #00aac8; font-weight: 700; white-space: nowrap; width: 100px; }
     td:last-child { color: #222; }
 
     .btn-register {
       display: inline-block; background: #0b1840; color: #fff;
-      padding: 14px 40px; border-radius: 8px; font-size: 15px;
+      padding: 15px 48px; border-radius: 8px; font-size: 16px;
       font-weight: 800; text-decoration: none; letter-spacing: 2px;
-      margin-bottom: 44px; transition: background 0.2s;
+      margin-bottom: 48px; transition: background 0.2s;
     }
     .btn-register:hover { background: #1a2e6e; }
 
-    /* 후원사 버전 하단 */
+    /* 후원사 하단 */
     .footer {
-      border-top: 1px solid rgba(0,0,0,0.1);
-      padding-top: 16px;
       display: flex;
-      justify-content: space-between;
       align-items: flex-end;
+      justify-content: space-between;
+      border-top: 1px solid rgba(0,0,0,0.1);
+      padding-top: 18px;
     }
-    .sponsor-rows { display: flex; flex-direction: column; gap: 10px; }
-    .sponsor-row { display: flex; align-items: center; gap: 8px; }
-    .sponsor-tag {
-      font-size: 9px; font-weight: 700; color: #888;
-      letter-spacing: 1px; white-space: nowrap; width: 24px;
-    }
-    .sponsor-row img { height: 20px; object-fit: contain; }
-    /* SmartRate는 이미지 없으므로 텍스트 로고로 표시 */
-    .smartrate-text {
-      font-size: 13px; font-weight: 900; color: #0b1840;
-      letter-spacing: 1px;
-    }
-    .contact { font-size: 9px; color: #999; text-align: right; line-height: 1.7; }
-    .contact strong { display: block; color: #777; font-size: 9px; }
+    .sponsor-rows { display: flex; flex-direction: column; gap: 12px; }
+    .sponsor-row { display: flex; align-items: center; gap: 10px; }
+    .sponsor-tag { font-size: 10px; font-weight: 700; color: #888; letter-spacing: 1px; width: 26px; }
+    .sponsor-row img { height: 22px; object-fit: contain; }
+    .contact { font-size: 10px; color: #999; text-align: right; line-height: 1.7; }
+    .contact strong { display: block; color: #777; font-size: 10px; }
   </style>
 </head>
 <body>
@@ -117,11 +107,11 @@
   <p class="catchphrase">새로운 시대를 준비하는 모든 어린들께 특별한 자리에 초대합니다.</p>
 
   <div class="info-grid">
-    <div class="info-block">
+    <div>
       <div class="info-label">일 &nbsp; 시</div>
       <div class="info-value">2026.04.28 (TUE), 13:30 ~ 17:10</div>
     </div>
-    <div class="info-block">
+    <div>
       <div class="info-label">장 &nbsp; 소</div>
       <div class="info-value">양재 엘타워 옆 스포타임</div>
       <div class="info-sub">스포타임 5F</div>
