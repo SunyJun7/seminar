@@ -9,6 +9,7 @@ const crypto       = require('crypto');             // 타이밍 안전 비교
 const helmet       = require('helmet');             // 보안 헤더
 const rateLimit    = require('express-rate-limit'); // 요청 횟수 제한
 const multer       = require('multer');             // 파일 업로드
+const QRCode       = require('qrcode');             // QR 코드 생성
 const { Pool }     = require('pg');                 // PostgreSQL 연결
 const ExcelJS      = require('exceljs');            // Excel 파일 생성
 
@@ -53,13 +54,22 @@ async function initDB() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS seminar_registrations (
       id         SERIAL PRIMARY KEY,
-      name       VARCHAR(100)  NOT NULL,  -- 이름
-      company    VARCHAR(200)  NOT NULL,  -- 회사명
-      position   VARCHAR(100)  NOT NULL,  -- 직책
-      phone      VARCHAR(50)   NOT NULL,  -- 연락처
-      email      VARCHAR(200)  NOT NULL,  -- 이메일
-      interest   TEXT,                    -- 관심분야 (선택, 쉼표 구분)
-      created_at TIMESTAMP DEFAULT NOW()  -- 신청 일시 (자동 기록)
+      name       VARCHAR(100)  NOT NULL,
+      company    VARCHAR(200)  NOT NULL,
+      position   VARCHAR(100)  NOT NULL,
+      phone      VARCHAR(50)   NOT NULL,
+      email      VARCHAR(200)  NOT NULL,
+      interest   TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS seminar_reviews (
+      id         SERIAL PRIMARY KEY,
+      name       VARCHAR(100),            -- 작성자 이름 (선택)
+      rating     SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+      content    TEXT NOT NULL,           -- 후기 내용
+      created_at TIMESTAMP DEFAULT NOW()
     )
   `);
   console.log('DB 테이블 준비 완료');
@@ -286,6 +296,104 @@ app.delete('/api/registrations/:id', adminLimiter, adminAuth, async (req, res) =
   } catch (err) {
     console.error('신청자 삭제 오류:', err.message);
     res.status(500).json({ success: false, message: '삭제 중 오류가 발생했습니다.' });
+  }
+});
+
+// =============================================================
+// 후기 API
+// =============================================================
+
+// -------------------------------------------------------------
+// POST /api/review
+// 세미나 후기를 DB에 저장합니다. (공개 엔드포인트 — QR 접속자용)
+// -------------------------------------------------------------
+app.post('/api/review', registerLimiter, async (req, res) => {
+  const { name, rating, content } = req.body;
+  const r = parseInt(rating, 10);
+
+  if (!content || !content.trim()) {
+    return res.status(400).json({ success: false, message: '후기 내용을 입력해 주세요.' });
+  }
+  if (!r || r < 1 || r > 5) {
+    return res.status(400).json({ success: false, message: '별점을 선택해 주세요.' });
+  }
+
+  try {
+    await pool.query(
+      'INSERT INTO seminar_reviews (name, rating, content) VALUES ($1, $2, $3)',
+      [name?.trim() || '익명', r, content.trim()]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error('후기 저장 오류:', err.message);
+    res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+  }
+});
+
+// -------------------------------------------------------------
+// GET /api/reviews
+// 후기 전체 목록을 반환합니다. (관리자 전용)
+// -------------------------------------------------------------
+app.get('/api/reviews', adminLimiter, adminAuth, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM seminar_reviews ORDER BY created_at DESC'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('후기 조회 오류:', err.message);
+    res.status(500).json({ error: '후기를 불러오지 못했습니다.' });
+  }
+});
+
+// -------------------------------------------------------------
+// GET /api/reviews/export
+// 후기 전체를 Excel 파일로 다운로드합니다. (관리자 전용)
+// -------------------------------------------------------------
+app.get('/api/reviews/export', adminLimiter, adminAuth, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM seminar_reviews ORDER BY created_at ASC'
+    );
+    const workbook = new ExcelJS.Workbook();
+    const sheet    = workbook.addWorksheet('세미나 후기');
+    sheet.columns = [
+      { header: 'No',     key: 'id',         width: 8  },
+      { header: '이름',   key: 'name',        width: 15 },
+      { header: '별점',   key: 'rating',      width: 8  },
+      { header: '후기',   key: 'content',     width: 60 },
+      { header: '작성일시', key: 'created_at', width: 22 },
+    ];
+    sheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A237E' } };
+    result.rows.forEach(row => sheet.addRow({
+      ...row,
+      rating: '★'.repeat(row.rating),
+      created_at: new Date(row.created_at).toLocaleString('ko-KR')
+    }));
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="seminar_reviews.xlsx"');
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    console.error('후기 Excel 오류:', err.message);
+    res.status(500).json({ error: 'Excel 생성에 실패했습니다.' });
+  }
+});
+
+// -------------------------------------------------------------
+// GET /api/review-qr
+// 후기 페이지 QR 코드 이미지를 반환합니다. (관리자 전용)
+// -------------------------------------------------------------
+app.get('/api/review-qr', adminLimiter, adminAuth, async (req, res) => {
+  const siteUrl = (process.env.SITE_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
+  const reviewUrl = `${siteUrl}/review.html`;
+  try {
+    const png = await QRCode.toBuffer(reviewUrl, { width: 300, margin: 2 });
+    res.setHeader('Content-Type', 'image/png');
+    res.send(png);
+  } catch (err) {
+    res.status(500).json({ error: 'QR 코드 생성에 실패했습니다.' });
   }
 });
 

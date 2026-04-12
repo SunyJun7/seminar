@@ -199,5 +199,34 @@ document.getElementById('btnUpload').addEventListener('click', () => {
 });
 document.getElementById('fileInput').addEventListener('change', uploadFile);
 
+// 후기 목록 불러오기
+async function loadReviews() {
+  try {
+    const res  = await fetch('/api/reviews');
+    const list = await res.json();
+    const el   = document.getElementById('reviewList');
+
+    if (!Array.isArray(list) || list.length === 0) {
+      el.innerHTML = '<span style="font-size:13px;color:#aaa;">아직 후기가 없습니다.</span>';
+      return;
+    }
+
+    el.innerHTML = list.map(r => `
+      <div class="review-item">
+        <div>
+          <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+          <strong style="margin-left:8px;font-size:14px;">${escapeHtml(r.name || '익명')}</strong>
+        </div>
+        <div style="margin-top:6px;font-size:14px;color:#333;">${escapeHtml(r.content)}</div>
+        <div class="review-meta">${new Date(r.created_at).toLocaleString('ko-KR')}</div>
+      </div>
+    `).join('');
+  } catch {
+    document.getElementById('reviewList').innerHTML =
+      '<span style="font-size:13px;color:#c62828;">후기를 불러오지 못했습니다.</span>';
+  }
+}
+
 loadRegistrations();
 loadFiles();
+loadReviews();

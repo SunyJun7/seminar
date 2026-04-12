@@ -104,6 +104,21 @@
     .upload-msg.success { color: #2e7d32; }
     .upload-msg.error   { color: #c62828; }
 
+    /* 후기 목록 */
+    .review-item {
+      background: #fff;
+      border: 1px solid #e0e3f0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+    }
+    .review-item .review-meta {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 6px;
+    }
+    .review-stars { color: #f5a623; font-size: 16px; }
+
     /* 테이블 */
     .table-wrap {
       overflow-x: auto;
@@ -211,6 +226,25 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- 후기 관리 섹션 -->
+    <div class="upload-section" style="margin-top:32px;">
+      <h3>💬 세미나 후기</h3>
+      <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px;">
+        <!-- QR 코드 -->
+        <div style="text-align:center;">
+          <img id="reviewQr" src="/api/review-qr" alt="후기 QR" style="width:120px;height:120px;border:1px solid #e0e3f0;border-radius:8px;" />
+          <div style="font-size:11px;color:#888;margin-top:4px;">후기 작성 QR</div>
+        </div>
+        <!-- 버튼 -->
+        <div style="display:flex;flex-direction:column;gap:8px;justify-content:center;">
+          <a href="/api/reviews/export" class="btn-export" style="font-size:13px;padding:8px 16px;">
+            📥 후기 Excel 다운로드
+          </a>
+        </div>
+      </div>
+      <div id="reviewList"></div>
     </div>
 
     <div style="text-align:center; margin-top:20px;">

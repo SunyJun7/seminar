@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>세미나 후기 | SmartGate</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .star-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .star-group input[type="radio"] { display: none; }
+    .star-group label {
+      font-size: 36px;
+      color: #ddd;
+      cursor: pointer;
+      transition: color 0.15s;
+      line-height: 1;
+    }
+    .star-group input[type="radio"]:checked ~ label,
+    .star-group label:hover,
+    .star-group label:hover ~ label { color: #ddd; }
+    .star-group { flex-direction: row-reverse; justify-content: flex-end; }
+    .star-group label:hover,
+    .star-group label:hover ~ label { color: #ddd; }
+    .star-group input[type="radio"]:checked ~ label { color: #ddd; }
+
+    /* 별점 RTL trick */
+    .stars {
+      display: flex;
+      flex-direction: row-reverse;
+      gap: 4px;
+      margin-top: 6px;
+    }
+    .stars input[type="radio"] { display: none; }
+    .stars label {
+      font-size: 40px;
+      color: #ddd;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .stars input[type="radio"]:checked ~ label,
+    .stars label:hover,
+    .stars label:hover ~ label { color: #f5a623; }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      resize: vertical;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    textarea:focus { outline: none; border-color: #1a237e; }
+
+    .review-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px 28px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      max-width: 480px;
+      margin: 40px auto;
+    }
+    .review-card h2 {
+      color: #1a237e;
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+    .review-card .subtitle {
+      color: #888;
+      font-size: 13px;
+      margin-bottom: 28px;
+    }
+    .rating-error { color: #e53935; font-size: 13px; margin-top: 4px; display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="review-card">
+      <h2>세미나 후기 작성</h2>
+      <p class="subtitle">소중한 의견을 남겨주시면 더 나은 행사 준비에 활용됩니다.</p>
+
+      <div class="form-group">
+        <label for="reviewName">이름 <span style="font-weight:400;color:#888;font-size:12px;">(선택)</span></label>
+        <input type="text" id="reviewName" placeholder="홍길동" />
+      </div>
+
+      <div class="form-group">
+        <label>별점 <span style="color:#e53935;">*</span></label>
+        <div class="stars" id="starGroup">
+          <input type="radio" name="rating" id="s5" value="5"><label for="s5">★</label>
+          <input type="radio" name="rating" id="s4" value="4"><label for="s4">★</label>
+          <input type="radio" name="rating" id="s3" value="3"><label for="s3">★</label>
+          <input type="radio" name="rating" id="s2" value="2"><label for="s2">★</label>
+          <input type="radio" name="rating" id="s1" value="1"><label for="s1">★</label>
+        </div>
+        <div class="rating-error" id="ratingError">별점을 선택해 주세요.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="reviewContent">후기 <span style="color:#e53935;">*</span></label>
+        <textarea id="reviewContent" placeholder="세미나에 대한 솔직한 의견을 남겨주세요."></textarea>
+      </div>
+
+      <button class="btn-primary" id="btnSubmitReview">후기 제출</button>
+    </div>
+  </div>
+
+  <script src="review.js"></script>
+</body>
+</html>
