@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>실시간 AI 오케스트레이션 세미나 | SmartGate</title>
+  <title>실시간 AI 오케스트레이션 세미나 | SmartRate</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -24,7 +24,6 @@
       padding: 40px 36px 48px;
     }
 
-    /* 배경 패턴 */
     .poster::before {
       content: '';
       position: absolute;
@@ -39,7 +38,6 @@
 
     .content { position: relative; z-index: 1; }
 
-    /* 상단 레이블 */
     .label-top {
       font-size: 11px;
       color: #555;
@@ -47,7 +45,6 @@
       margin-bottom: 20px;
     }
 
-    /* 메인 타이틀 */
     .main-title {
       font-size: 28px;
       font-weight: 900;
@@ -58,7 +55,6 @@
     }
     .main-title .highlight { color: #00a9c8; }
 
-    /* 본문 */
     .body-text {
       font-size: 12.5px;
       color: #444;
@@ -76,7 +72,6 @@
       word-break: keep-all;
     }
 
-    /* 정보 그리드 */
     .info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -104,7 +99,6 @@
       margin-top: 2px;
     }
 
-    /* 사전등록 기간 */
     .reg-period {
       background: rgba(0,169,200,0.08);
       border-left: 3px solid #00a9c8;
@@ -125,7 +119,6 @@
       color: #0d1a40;
     }
 
-    /* 세미나 일정 */
     .schedule-title {
       font-size: 11px;
       font-weight: 700;
@@ -151,7 +144,6 @@
     }
     .schedule-table td:last-child { color: #333; }
 
-    /* CTA 버튼 */
     .btn-register {
       display: block;
       width: 100%;
@@ -169,22 +161,32 @@
     }
     .btn-register:hover { background: #1a2e6e; }
 
-    /* 하단 로고 영역 */
-    .footer-logos {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    /* 후원사 버전 하단 */
+    .footer-sponsor {
       border-top: 1px solid rgba(0,0,0,0.1);
       padding-top: 20px;
     }
-    .footer-logos img {
-      height: 28px;
+    .sponsor-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .sponsor-row .sponsor-label {
+      font-size: 11px;
+      color: #888;
+      white-space: nowrap;
+      min-width: 28px;
+    }
+    .sponsor-row img {
+      height: 24px;
       object-fit: contain;
     }
     .contact {
       font-size: 10.5px;
       color: #888;
       text-align: right;
+      margin-top: 8px;
     }
   </style>
 </head>
@@ -240,9 +242,16 @@
 
       <a href="register.html" class="btn-register">사전 등록</a>
 
-      <div class="footer-logos">
-        <img src="images/logo-smartgate.png" alt="SmartGate" />
-        <img src="images/logo-vantiq.png" alt="VANTIQ" />
+      <div class="footer-sponsor">
+        <div class="sponsor-row">
+          <span class="sponsor-label">주 최</span>
+          <img src="images/logo-smartrate.png" alt="SmartRate" />
+        </div>
+        <div class="sponsor-row">
+          <span class="sponsor-label">후 원</span>
+          <img src="images/logo-vantiq.png" alt="VANTIQ" />
+          <img src="images/logo-nsca.png" alt="국민안전역량협회" />
+        </div>
         <div class="contact">문 의 처 hightech_sales@smartgate.co.kr</div>
       </div>
 
