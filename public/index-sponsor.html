@@ -9,20 +9,24 @@
 
     body {
       font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
-      background: #ddf5f2; /* ✏️ 배경색 — 포스터와 동일하게 통일 */
+      background: #ddf5f2; /* ✏️ 페이지 전체 배경색 — 포스터 배경색과 동일하게 맞춤 */
       display: flex;
       justify-content: center;
-      padding: 40px 20px;
+      padding: 40px 20px; /* ✏️ 페이지 상하좌우 여백 — 줄이면 포스터가 화면에 더 꽉 참 */
     }
 
     .poster {
       width: 100%;
-      max-width: 864px;
-      min-height: 1224px;
+      max-width: 864px;  /* ✏️ 포스터 최대 너비 — 원본 비율 기준 864px, 줄이면 더 좁아짐 */
+      min-height: 1224px; /* ✏️ 포스터 최소 높이 — 원본 비율(1:1.41) 기준, 내용 많으면 자동으로 늘어남 */
       position: relative;
       background: url('images/bg.png') right bottom / 52% auto no-repeat, #ddf5f2;
-      padding: 7% 8% 7% 7%;
-      /* box-shadow 제거 — 배경과 자연스럽게 통일 */
+      /* ✏️ 배경 이미지 설정:
+           - 'images/bg.png' : 우측 하단 장식 이미지 파일 경로
+           - right bottom    : 이미지 위치 (우측 하단 고정)
+           - 52% auto        : 이미지 크기 (너비 52% / 높이 자동) — 숫자 키우면 이미지 더 커짐
+           - #ddf5f2         : 이미지 없는 영역 채울 배경색 */
+      padding: 7% 8% 7% 7%; /* ✏️ 포스터 내부 여백 — 상 우 하 좌 순서, % 단위라 창 크기에 비례 */
     }
 
     .label-top { font-size: clamp(10px, 1.3vw, 13px); color: #666; letter-spacing: 0.3px; margin-bottom: 2.5%; }
