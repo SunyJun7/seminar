@@ -3,121 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>실시간 AI 오케스트레이션 세미나 | SmartRate × VANTIQ</title>
+  <title>실시간 AI 오케스트레이션 세미나 | SmartGate × VANTIQ</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
-      background: #e0f5f2;
+      background: #daf4f0;
       min-height: 100vh;
     }
 
     .poster {
-      max-width: 600px;
+      max-width: 480px;
       margin: 0 auto;
-      background: #e0f5f2;
+      background: #daf4f0;
       min-height: 100vh;
       position: relative;
       overflow: hidden;
-      padding: 44px 40px 52px;
+      padding: 36px 32px 44px;
     }
 
     .bg {
       position: absolute;
-      top: 0; right: 0;
-      width: 52%;
+      top: 0; right: -10px;
+      width: 48%;
       height: 100%;
       pointer-events: none;
+      z-index: 0;
     }
     .pill { position: absolute; border-radius: 999px; }
     .circle { position: absolute; border-radius: 50%; }
-    .dot-ring { position: absolute; border-radius: 50%; border: 1.5px dashed rgba(0,150,140,0.4); }
-    .p1 { width: 56px; height: 65%; background: #4dd8d0; top: 0; right: 4px; opacity: 0.95; }
-    .p2 { width: 52px; height: 52%; background: #2bbdb4; top: 10%; right: 54px; opacity: 0.9; }
-    .p3 { width: 48px; height: 38%; background: #268fa8; bottom: 0; right: 108px; opacity: 0.75; }
-    .p4 { width: 52px; height: 30%; background: #1e7a96; bottom: 0; right: 4px; opacity: 0.6; }
-    .c1 { width: 110px; height: 110px; background: #2bbdb4; top: 30%; right: 16px; opacity: 0.7; }
-    .c2 { width: 80px; height: 80px; background: #1e8a9c; bottom: 12%; right: 60px; opacity: 0.5; }
-    .r1 { width: 58px; height: 58px; top: 18%; right: 86px; }
-    .r2 { width: 48px; height: 48px; bottom: 22%; right: 44px; }
-    .dot1 { width: 10px; height: 10px; background: rgba(0,160,148,0.5); top: 14%; right: 90px; border-radius: 50%; position: absolute; }
-    .dot2 { width: 8px; height: 8px; background: rgba(0,160,148,0.4); bottom: 28%; right: 50px; border-radius: 50%; position: absolute; }
+    .dot-ring { position: absolute; border-radius: 50%; border: 2px dashed rgba(0,160,150,0.35); background: transparent; }
+    .p1 { width: 50px; height: 62%; background: #3dd4ca; top: 0; right: 0; }
+    .p2 { width: 46px; height: 50%; background: #25b8ae; top: 8%; right: 48px; }
+    .p3 { width: 44px; height: 35%; background: #1e96a8; bottom: 0; right: 94px; opacity: 0.8; }
+    .p4 { width: 50px; height: 28%; background: #186e88; bottom: 0; right: 0; opacity: 0.65; }
+    .c1 { width: 100px; height: 100px; background: #25b8ae; top: 28%; right: 10px; opacity: 0.75; }
+    .c2 { width: 72px; height: 72px; background: #1a8898; bottom: 14%; right: 52px; opacity: 0.55; }
+    .r1 { width: 52px; height: 52px; top: 16%; right: 78px; }
+    .r2 { width: 42px; height: 42px; bottom: 24%; right: 38px; }
+    .dot { border-radius: 50%; position: absolute; background: rgba(0,155,145,0.5); }
+    .d1 { width: 9px; height: 9px; top: 12%; right: 82px; }
+    .d2 { width: 7px; height: 7px; bottom: 30%; right: 43px; }
 
     .content { position: relative; z-index: 1; }
 
-    .label-top { font-size: 10.5px; color: #555; letter-spacing: 0.3px; margin-bottom: 18px; }
+    .label-top { font-size: 10px; color: #555; letter-spacing: 0.2px; margin-bottom: 16px; }
 
     .main-title {
-      font-size: clamp(22px, 5vw, 30px);
-      font-weight: 900;
-      line-height: 1.3;
-      color: #0d1a40;
-      margin-bottom: 22px;
-      word-break: keep-all;
-      max-width: 75%;
+      font-size: 26px; font-weight: 900; line-height: 1.28;
+      color: #0b1840; margin-bottom: 20px; word-break: keep-all; width: 58%;
     }
-    .main-title .hl { color: #00a8c6; }
+    .main-title .hl { color: #00a3c0; }
 
     .body-text {
-      font-size: 11.5px;
-      color: #444;
-      line-height: 1.85;
-      margin-bottom: 8px;
-      word-break: keep-all;
-      max-width: 72%;
+      font-size: 10.5px; color: #3a3a3a; line-height: 1.9;
+      margin-bottom: 7px; word-break: keep-all; width: 60%;
     }
-    .body-text b { color: #00a8c6; }
+    .body-text b { color: #00a3c0; font-weight: 700; }
 
-    .catchphrase { font-size: 13.5px; font-weight: 800; color: #0d1a40; margin: 22px 0 26px; word-break: keep-all; }
+    .catchphrase { font-size: 12.5px; font-weight: 800; color: #0b1840; margin: 18px 0 22px; word-break: keep-all; }
 
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 18px; max-width: 80%; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
     .info-label {
-      font-size: 10px; font-weight: 800; color: #00a8c6;
-      letter-spacing: 1.5px; border-bottom: 1.5px solid #00a8c6;
-      padding-bottom: 5px; margin-bottom: 8px;
+      font-size: 9.5px; font-weight: 800; color: #00a3c0;
+      letter-spacing: 2px; border-bottom: 1.5px solid #00a3c0;
+      padding-bottom: 4px; margin-bottom: 7px;
     }
-    .info-value { font-size: 13px; font-weight: 800; color: #0d1a40; line-height: 1.5; }
-    .info-sub { font-size: 11px; color: #555; margin-top: 2px; }
+    .info-value { font-size: 12.5px; font-weight: 800; color: #0b1840; line-height: 1.5; }
+    .info-sub { font-size: 10.5px; color: #555; margin-top: 2px; }
 
-    .reg-period { margin-bottom: 22px; }
+    .reg-period { margin-bottom: 20px; }
+    .reg-value { font-size: 12px; font-weight: 700; color: #0b1840; }
 
     .schedule-label {
-      font-size: 10px; font-weight: 800; color: #00a8c6;
-      letter-spacing: 1.5px; border-bottom: 1.5px solid #00a8c6;
-      padding-bottom: 5px; margin-bottom: 10px;
+      font-size: 9.5px; font-weight: 800; color: #00a3c0;
+      letter-spacing: 2px; border-bottom: 1.5px solid #00a3c0;
+      padding-bottom: 4px; margin-bottom: 9px;
     }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 28px; font-size: 11.5px; }
-    tr { border-bottom: 1px solid rgba(0,168,198,0.15); }
-    td { padding: 6px 4px; vertical-align: top; }
-    td:first-child { color: #00a8c6; font-weight: 700; white-space: nowrap; width: 95px; }
-    td:last-child { color: #333; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 10.5px; }
+    tr { border-bottom: 1px solid rgba(0,163,192,0.13); }
+    td { padding: 5.5px 3px; vertical-align: top; }
+    td:first-child { color: #00a3c0; font-weight: 700; white-space: nowrap; width: 88px; }
+    td:last-child { color: #222; }
 
     .btn-register {
-      display: block; width: 160px; background: #0d1a40; color: #fff;
-      text-align: center; padding: 14px 20px; border-radius: 8px;
-      font-size: 15px; font-weight: 800; text-decoration: none;
-      letter-spacing: 2px; margin-bottom: 40px; transition: background 0.2s;
+      display: inline-block; background: #0b1840; color: #fff;
+      text-align: center; padding: 13px 36px; border-radius: 7px;
+      font-size: 14px; font-weight: 800; text-decoration: none;
+      letter-spacing: 2px; margin-bottom: 36px; transition: background 0.2s;
     }
     .btn-register:hover { background: #1a2e6e; }
 
     /* 후원사 버전 하단 */
     .footer {
-      border-top: 1px solid rgba(0,0,0,0.12);
-      padding-top: 18px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+      padding-top: 16px;
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
     }
     .sponsor-rows { display: flex; flex-direction: column; gap: 10px; }
-    .sponsor-row { display: flex; align-items: center; gap: 12px; }
-    .sponsor-tag {
-      font-size: 9.5px; font-weight: 700; color: #888;
-      letter-spacing: 0.5px; white-space: nowrap; min-width: 24px;
-    }
-    .sponsor-row img { height: 22px; object-fit: contain; }
-    .contact { font-size: 10px; color: #888; text-align: right; }
-    .contact span { display: block; font-weight: 600; color: #666; }
+    .sponsor-row { display: flex; align-items: center; gap: 10px; }
+    .sponsor-tag { font-size: 9px; font-weight: 700; color: #888; letter-spacing: 0.5px; white-space: nowrap; min-width: 22px; }
+    .sponsor-row img { height: 20px; object-fit: contain; }
+    .contact { font-size: 9.5px; color: #888; text-align: right; line-height: 1.6; }
+    .contact .contact-label { font-weight: 700; color: #666; }
   </style>
 </head>
 <body>
@@ -132,8 +123,8 @@
     <div class="circle c2"></div>
     <div class="dot-ring r1"></div>
     <div class="dot-ring r2"></div>
-    <div class="dot1"></div>
-    <div class="dot2"></div>
+    <div class="dot d1"></div>
+    <div class="dot d2"></div>
   </div>
 
   <div class="content">
@@ -171,7 +162,7 @@
 
     <div class="reg-period">
       <div class="info-label">사 전 &nbsp; 등 록 &nbsp; 기 간</div>
-      <div class="info-value">2026.04.13 (MON) ~ 27 (MON) 14:00 까지</div>
+      <div class="reg-value">2026.04.13 (MON) ~ 27 (MON) 14:00 까지</div>
     </div>
 
     <div class="schedule-label">세 미 나 &nbsp; 일 정</div>
@@ -198,7 +189,7 @@
         </div>
       </div>
       <div class="contact">
-        <span>문 의 처</span>
+        <span class="contact-label">문 의 처</span><br>
         hightech_sales@smartgate.co.kr
       </div>
     </div>
