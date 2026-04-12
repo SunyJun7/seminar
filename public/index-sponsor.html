@@ -27,14 +27,15 @@
     .label-top { font-size: 10px; color: #666; letter-spacing: 0.2px; margin-bottom: 14px; }
 
     .main-title {
-      font-size: 30px; font-weight: 900; line-height: 1.25;
-      color: #0b1840; margin-bottom: 18px; word-break: keep-all; max-width: 68%;
+      font-size: clamp(20px, 6vw, 30px);
+      font-weight: 900; line-height: 1.28;
+      color: #0b1840; margin-bottom: 18px; word-break: keep-all;
     }
     .main-title .hl { color: #00aac8; }
 
     .body-text {
-      font-size: 10.5px; color: #444; line-height: 1.85;
-      margin-bottom: 7px; word-break: keep-all; max-width: 65%;
+      font-size: clamp(10px, 2.5vw, 11px); color: #444; line-height: 1.85;
+      margin-bottom: 7px; word-break: keep-all;
     }
     .body-text b { color: #00aac8; font-weight: 700; }
 
