@@ -9,89 +9,62 @@
 
     body {
       font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
-      background: #daf4f0;
+      background: #ddf5f2;
       min-height: 100vh;
+      display: flex;
+      justify-content: center;
     }
 
     .poster {
-      max-width: 480px;
-      margin: 0 auto;
-      background: #daf4f0;
+      width: 100%;
+      max-width: 500px;
       min-height: 100vh;
       position: relative;
-      overflow: hidden;
-      padding: 36px 32px 44px;
+      background: url('images/bg.png') center bottom / 100% auto no-repeat, #ddf5f2;
+      padding: 40px 36px 48px;
     }
 
-    .bg {
-      position: absolute;
-      top: 0; right: -10px;
-      width: 48%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .pill { position: absolute; border-radius: 999px; }
-    .circle { position: absolute; border-radius: 50%; }
-    .dot-ring { position: absolute; border-radius: 50%; border: 2px dashed rgba(0,160,150,0.35); background: transparent; }
-    .p1 { width: 50px; height: 62%; background: #3dd4ca; top: 0; right: 0; }
-    .p2 { width: 46px; height: 50%; background: #25b8ae; top: 8%; right: 48px; }
-    .p3 { width: 44px; height: 35%; background: #1e96a8; bottom: 0; right: 94px; opacity: 0.8; }
-    .p4 { width: 50px; height: 28%; background: #186e88; bottom: 0; right: 0; opacity: 0.65; }
-    .c1 { width: 100px; height: 100px; background: #25b8ae; top: 28%; right: 10px; opacity: 0.75; }
-    .c2 { width: 72px; height: 72px; background: #1a8898; bottom: 14%; right: 52px; opacity: 0.55; }
-    .r1 { width: 52px; height: 52px; top: 16%; right: 78px; }
-    .r2 { width: 42px; height: 42px; bottom: 24%; right: 38px; }
-    .dot { border-radius: 50%; position: absolute; background: rgba(0,155,145,0.5); }
-    .d1 { width: 9px; height: 9px; top: 12%; right: 82px; }
-    .d2 { width: 7px; height: 7px; bottom: 30%; right: 43px; }
-
-    .content { position: relative; z-index: 1; }
-
-    .label-top { font-size: 10px; color: #555; letter-spacing: 0.2px; margin-bottom: 16px; }
+    .label-top { font-size: 10px; color: #666; letter-spacing: 0.2px; margin-bottom: 14px; }
 
     .main-title {
-      font-size: 26px; font-weight: 900; line-height: 1.28;
-      color: #0b1840; margin-bottom: 20px; word-break: keep-all; width: 58%;
+      font-size: 30px; font-weight: 900; line-height: 1.25;
+      color: #0b1840; margin-bottom: 18px; word-break: keep-all; max-width: 68%;
     }
-    .main-title .hl { color: #00a3c0; }
+    .main-title .hl { color: #00aac8; }
 
     .body-text {
-      font-size: 10.5px; color: #3a3a3a; line-height: 1.9;
-      margin-bottom: 7px; word-break: keep-all; width: 60%;
+      font-size: 10.5px; color: #444; line-height: 1.85;
+      margin-bottom: 7px; word-break: keep-all; max-width: 65%;
     }
-    .body-text b { color: #00a3c0; font-weight: 700; }
+    .body-text b { color: #00aac8; font-weight: 700; }
 
-    .catchphrase { font-size: 12.5px; font-weight: 800; color: #0b1840; margin: 18px 0 22px; word-break: keep-all; }
+    .catchphrase { font-size: 13px; font-weight: 800; color: #0b1840; margin: 20px 0 24px; word-break: keep-all; }
 
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-bottom: 18px; }
+    .info-block { padding-right: 12px; }
     .info-label {
-      font-size: 9.5px; font-weight: 800; color: #00a3c0;
-      letter-spacing: 2px; border-bottom: 1.5px solid #00a3c0;
-      padding-bottom: 4px; margin-bottom: 7px;
+      font-size: 9px; font-weight: 800; color: #00aac8;
+      letter-spacing: 2.5px; border-bottom: 1.5px solid #00aac8;
+      padding-bottom: 5px; margin-bottom: 8px;
     }
-    .info-value { font-size: 12.5px; font-weight: 800; color: #0b1840; line-height: 1.5; }
-    .info-sub { font-size: 10.5px; color: #555; margin-top: 2px; }
+    .info-value { font-size: 13px; font-weight: 800; color: #0b1840; line-height: 1.55; }
+    .info-sub { font-size: 11px; color: #555; margin-top: 3px; }
 
-    .reg-period { margin-bottom: 20px; }
-    .reg-value { font-size: 12px; font-weight: 700; color: #0b1840; }
+    .reg-section { margin-bottom: 22px; }
+    .reg-value { font-size: 12.5px; font-weight: 700; color: #0b1840; margin-top: 7px; }
 
-    .schedule-label {
-      font-size: 9.5px; font-weight: 800; color: #00a3c0;
-      letter-spacing: 2px; border-bottom: 1.5px solid #00a3c0;
-      padding-bottom: 4px; margin-bottom: 9px;
-    }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 10.5px; }
-    tr { border-bottom: 1px solid rgba(0,163,192,0.13); }
-    td { padding: 5.5px 3px; vertical-align: top; }
-    td:first-child { color: #00a3c0; font-weight: 700; white-space: nowrap; width: 88px; }
+    .schedule-section { margin-bottom: 26px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10.5px; }
+    tr { border-bottom: 1px solid rgba(0,170,200,0.13); }
+    td { padding: 6px 3px; vertical-align: top; }
+    td:first-child { color: #00aac8; font-weight: 700; white-space: nowrap; width: 90px; }
     td:last-child { color: #222; }
 
     .btn-register {
       display: inline-block; background: #0b1840; color: #fff;
-      text-align: center; padding: 13px 36px; border-radius: 7px;
-      font-size: 14px; font-weight: 800; text-decoration: none;
-      letter-spacing: 2px; margin-bottom: 36px; transition: background 0.2s;
+      padding: 14px 40px; border-radius: 8px; font-size: 15px;
+      font-weight: 800; text-decoration: none; letter-spacing: 2px;
+      margin-bottom: 44px; transition: background 0.2s;
     }
     .btn-register:hover { background: #1a2e6e; }
 
@@ -104,68 +77,63 @@
       align-items: flex-end;
     }
     .sponsor-rows { display: flex; flex-direction: column; gap: 10px; }
-    .sponsor-row { display: flex; align-items: center; gap: 10px; }
-    .sponsor-tag { font-size: 9px; font-weight: 700; color: #888; letter-spacing: 0.5px; white-space: nowrap; min-width: 22px; }
+    .sponsor-row { display: flex; align-items: center; gap: 8px; }
+    .sponsor-tag {
+      font-size: 9px; font-weight: 700; color: #888;
+      letter-spacing: 1px; white-space: nowrap; width: 24px;
+    }
     .sponsor-row img { height: 20px; object-fit: contain; }
-    .contact { font-size: 9.5px; color: #888; text-align: right; line-height: 1.6; }
-    .contact .contact-label { font-weight: 700; color: #666; }
+    /* SmartRate는 이미지 없으므로 텍스트 로고로 표시 */
+    .smartrate-text {
+      font-size: 13px; font-weight: 900; color: #0b1840;
+      letter-spacing: 1px;
+    }
+    .contact { font-size: 9px; color: #999; text-align: right; line-height: 1.7; }
+    .contact strong { display: block; color: #777; font-size: 9px; }
   </style>
 </head>
 <body>
 <div class="poster">
 
-  <div class="bg">
-    <div class="pill p1"></div>
-    <div class="pill p2"></div>
-    <div class="pill p3"></div>
-    <div class="pill p4"></div>
-    <div class="circle c1"></div>
-    <div class="circle c2"></div>
-    <div class="dot-ring r1"></div>
-    <div class="dot-ring r2"></div>
-    <div class="dot d1"></div>
-    <div class="dot d2"></div>
+  <p class="label-top">Industry-Specific AI Orchestration Services</p>
+
+  <h1 class="main-title">
+    실시간 AI 오케스트레이션<br>
+    <span class="hl">Vantiq</span> x 스마트게이트가 제시하는<br>
+    AX (AI Transformation)의 미래
+  </h1>
+
+  <p class="body-text">
+    변화의 속도가 그 어느 때보다 빠른 지금, 지속 가능한 성장을 위한 핵심 동력은 '실시간'과 능력 예상입니다.<br>
+    실시간 지능형 플랫폼 전문 기업 <b>Vantiq</b>와 비즈니스 혁신 파트너 스마트게이트는<br>
+    전략적 파트너십을 통해 다양한 산업 현장이 어떻게 실시간 AI 기술로 혁신하는 새로운 표준을 제시하고자 합니다.
+  </p>
+  <p class="body-text">
+    본 세미나는 규모와 분야를 떠나 모든 조직이 직면한 인공지능 전환(AX)의 실제적인 전략들을 공유합니다.<br>
+    데이터를 실시간으로 가치화하면서도 AI 오케스트레이션이 어떻게 조직의 미래 경쟁력을 확보할 방법인지 제시합니다.
+  </p>
+
+  <p class="catchphrase">새로운 시대를 준비하는 모든 어린들께 특별한 자리에 초대합니다.</p>
+
+  <div class="info-grid">
+    <div class="info-block">
+      <div class="info-label">일 &nbsp; 시</div>
+      <div class="info-value">2026.04.28 (TUE), 13:30 ~ 17:10</div>
+    </div>
+    <div class="info-block">
+      <div class="info-label">장 &nbsp; 소</div>
+      <div class="info-value">양재 엘타워 옆 스포타임</div>
+      <div class="info-sub">스포타임 5F</div>
+    </div>
   </div>
 
-  <div class="content">
-    <p class="label-top">Industry-Specific AI Orchestration Services</p>
+  <div class="reg-section">
+    <div class="info-label">사 전 &nbsp; 등 록 &nbsp; 기 간</div>
+    <div class="reg-value">2026.04.13 (MON) ~ 27 (MON) 14:00 까지</div>
+  </div>
 
-    <h1 class="main-title">
-      실시간 AI 오케스트레이션<br>
-      <span class="hl">Vantiq</span> x 스마트게이트가 제시하는<br>
-      AX (AI Transformation)의 미래
-    </h1>
-
-    <p class="body-text">
-      변화의 속도가 그 어느 때보다 빠른 지금, 지속 가능한 성장을 위한 핵심 동력은 '실시간'과 능력 예상입니다.<br>
-      실시간 지능형 플랫폼 전문 기업 <b>Vantiq</b>와 비즈니스 혁신 파트너 스마트게이트는<br>
-      전략적 파트너십을 통해 다양한 산업 현장이 어떻게 실시간 AI 기술로 혁신하는 새로운 표준을 제시하고자 합니다.
-    </p>
-    <p class="body-text">
-      본 세미나는 규모와 분야를 떠나 모든 조직이 직면한 인공지능 전환(AX)의 실제적인 전략들을 공유합니다.<br>
-      데이터를 실시간으로 가치화하면서도 AI 오케스트레이션이 어떻게 조직의 미래 경쟁력을 확보할 방법인지 제시합니다.
-    </p>
-
-    <p class="catchphrase">새로운 시대를 준비하는 모든 어린들께 특별한 자리에 초대합니다.</p>
-
-    <div class="info-grid">
-      <div>
-        <div class="info-label">일 &nbsp; 시</div>
-        <div class="info-value">2026.04.28 (TUE)<br>13:30 ~ 17:10</div>
-      </div>
-      <div>
-        <div class="info-label">장 &nbsp; 소</div>
-        <div class="info-value">양재 엘타워 옆 스포타임</div>
-        <div class="info-sub">스포타임 5F</div>
-      </div>
-    </div>
-
-    <div class="reg-period">
-      <div class="info-label">사 전 &nbsp; 등 록 &nbsp; 기 간</div>
-      <div class="reg-value">2026.04.13 (MON) ~ 27 (MON) 14:00 까지</div>
-    </div>
-
-    <div class="schedule-label">세 미 나 &nbsp; 일 정</div>
+  <div class="schedule-section">
+    <div class="info-label">세 미 나 &nbsp; 일 정</div>
     <table>
       <tr><td>13:30 - 13:55</td><td>오프닝 및 Vantiq 기업 개요</td></tr>
       <tr><td>14:00 - 14:40</td><td>[Session 1] SmartGate : 공공 안전 (Public Safety)</td></tr>
@@ -173,25 +141,25 @@
       <tr><td>15:40 - 16:20</td><td>[Session 3] Vantiq 사례 발표 : 제조 자동화</td></tr>
       <tr><td>16:30 - 17:10</td><td>[Session 4] LS 타리우에너 : IFC 자동화, 제조환경 AI 구축</td></tr>
     </table>
+  </div>
 
-    <a href="register.html" class="btn-register">사전 등록</a>
+  <a href="register.html" class="btn-register">사전 등록</a>
 
-    <div class="footer">
-      <div class="sponsor-rows">
-        <div class="sponsor-row">
-          <span class="sponsor-tag">주 최</span>
-          <img src="images/logo-smartgate.png" alt="SMARTGATE" />
-        </div>
-        <div class="sponsor-row">
-          <span class="sponsor-tag">후 원</span>
-          <img src="images/logo-vantiq.png" alt="VANTIQ" />
-          <img src="images/logo-nsca.png" alt="국민안전역량협회" />
-        </div>
+  <div class="footer">
+    <div class="sponsor-rows">
+      <div class="sponsor-row">
+        <span class="sponsor-tag">주 최</span>
+        <img src="images/logo-smartgate.png" alt="SMARTGATE" />
       </div>
-      <div class="contact">
-        <span class="contact-label">문 의 처</span><br>
-        hightech_sales@smartgate.co.kr
+      <div class="sponsor-row">
+        <span class="sponsor-tag">후 원</span>
+        <img src="images/logo-vantiq.png" alt="VANTIQ" />
+        <img src="images/logo-nsca.png" alt="국민안전역량협회" />
       </div>
+    </div>
+    <div class="contact">
+      <strong>문 의 처</strong>
+      hightech_sales@smartgate.co.kr
     </div>
   </div>
 
