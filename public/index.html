@@ -9,7 +9,7 @@
 
     body {
       font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
-      background: #ddf5f2; /* ✏️ 페이지 전체 배경색 — 포스터 배경색과 동일하게 맞춤 */
+      background: #f0fdff; /* ✏️ 페이지 전체 배경색 — 포스터 배경색과 동일하게 맞춤 */
       display: flex;
       justify-content: center;
       padding: 40px 20px; /* ✏️ 페이지 상하좌우 여백 — 줄이면 포스터가 화면에 더 꽉 참 */
@@ -19,20 +19,22 @@
       width: 100%;
       max-width: 864px;  /* ✏️ 포스터 최대 너비 — 원본 비율 기준 864px, 줄이면 더 좁아짐 */
       min-height: 1224px; /* ✏️ 포스터 최소 높이 — 원본 비율(1:1.41) 기준, 내용 많으면 자동으로 늘어남 */
+      overflow: hidden; /* ✏️ 배경 이미지가 포스터 영역 밖으로 삐져나오지 않게 잘라냄 */
       position: relative;
-      background: url('images/bg.png') right bottom / 52% auto no-repeat, #ddf5f2;
+      background: url('images/aa.png') 55% 85% / 75% auto no-repeat, #f0fdff;
+      background-clip: content-box;
       /* ✏️ 배경 이미지 설정:
-           - 'images/bg.png' : 우측 하단 장식 이미지 파일 경로
-           - right bottom    : 이미지 위치 (우측 하단 고정)
+           - 'images/aa.png' : 우측 하단 장식 이미지 파일 경로
+           - 70% 100%        : 이미지 위치 (좌→우 70%, 100%=포스터 하단에 맞춤) — X값 키우면 더 오른쪽으로
            - 52% auto        : 이미지 크기 (너비 52% / 높이 자동) — 숫자 키우면 이미지 더 커짐
-           - #ddf5f2         : 이미지 없는 영역 채울 배경색 */
-      padding: 7% 8% 7% 7%; /* ✏️ 포스터 내부 여백 — 상 우 하 좌 순서, % 단위라 창 크기에 비례 */
+           - #f0fdff         : 이미지 없는 영역 채울 배경색 */
+      padding: 0.93% 8% 7% 7%; /* ✏️ 포스터 내부 여백 — 상 우 하 좌 순서, % 단위라 창 크기에 비례 */
     }
 
     .label-top { font-size: clamp(10px, 1.3vw, 13px); color: #666; letter-spacing: 0.3px; margin-bottom: 2.5%; }
 
     .main-title {
-      font-size: clamp(26px, 4.5vw, 44px); font-weight: 900; line-height: 1.25;
+      font-size: clamp(22px, 4.5vw, 44px); font-weight: 900; line-height: 1.25;
       color: #0b1840; margin-bottom: 3%; word-break: keep-all;
     }
     .main-title .hl { color: #00aac8; }
@@ -84,6 +86,7 @@
 </head>
 <body>
 <div class="poster">
+  <div>
 
   <!-- 상단 서브 레이블 -->
   <p class="label-top">Industry-Specific AI Orchestration Services</p>
@@ -117,14 +120,14 @@
     </div>
     <div>
       <div class="info-label">장 &nbsp; 소</div>
-      <div class="info-value">양재 엘타워 옆 스포타임</div>
+      <div class="info-value">양재 엘타워, 멜론홀(스포타임 5F)</div>
       <div class="info-sub">스포타임 5F</div>
     </div>
   </div>
 
-  <!-- 사전 등록 기간 — ✏️ 수정 가능 -->
+  <!-- 사전등록 기간 — ✏️ 수정 가능 -->
   <div class="reg-section">
-    <div class="info-label">사 전 &nbsp; 등 록 &nbsp; 기 간</div>
+    <div class="info-label">사 전 등 록 &nbsp; 기 간</div>
     <div class="reg-value">2026.04.13 (MON) ~ 27 (MON) 14:00 까지</div>
   </div>
 
@@ -156,6 +159,7 @@
     </div>
   </div>
 
+  </div><!-- /content border -->
 </div>
 </body>
 </html>
