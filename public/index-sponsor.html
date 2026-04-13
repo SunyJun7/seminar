@@ -4,84 +4,284 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>실시간 AI 오케스트레이션 세미나 | SmartGate × VANTIQ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
-      background: #ddf5f2; /* ✏️ 페이지 전체 배경색 — 포스터 배경색과 동일하게 맞춤 */
+      font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background: #e8f7fa;
       display: flex;
       justify-content: center;
-      padding: 40px 20px; /* ✏️ 페이지 상하좌우 여백 — 줄이면 포스터가 화면에 더 꽉 참 */
+      padding: 40px 20px;
     }
 
     .poster {
       width: 100%;
-      max-width: 864px;  /* ✏️ 포스터 최대 너비 — 원본 비율 기준 864px, 줄이면 더 좁아짐 */
-      min-height: 1224px; /* ✏️ 포스터 최소 높이 — 원본 비율(1:1.41) 기준, 내용 많으면 자동으로 늘어남 */
+      max-width: 864px;
+      min-height: 1224px;
       position: relative;
-      background: url('images/bg.png') right bottom / 52% auto no-repeat, #ddf5f2;
-      /* ✏️ 배경 이미지 설정:
-           - 'images/bg.png' : 우측 하단 장식 이미지 파일 경로
-           - right bottom    : 이미지 위치 (우측 하단 고정)
-           - 52% auto        : 이미지 크기 (너비 52% / 높이 자동) — 숫자 키우면 이미지 더 커짐
-           - #ddf5f2         : 이미지 없는 영역 채울 배경색 */
-      padding: 7% 8% 7% 7%; /* ✏️ 포스터 내부 여백 — 상 우 하 좌 순서, % 단위라 창 크기에 비례 */
+      background-color: #f0fdff;
+      overflow: hidden;
+      padding: 48px 60px 50px 60px;
     }
 
-    .label-top { font-size: clamp(10px, 1.3vw, 13px); color: #666; letter-spacing: 0.3px; margin-bottom: 2.5%; }
+    /* 배경 장식 이미지 — 우측 하단에 고정 */
+    .poster::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 66%;
+      height: 100%;
+      background: url('images/aa.png') right bottom / contain no-repeat;
+      pointer-events: none;
+      z-index: 0;
+    }
 
+    /* 모든 콘텐츠가 배경 위에 표시되도록 */
+    .poster > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 상단 서브 레이블 */
+    .label-top {
+      font-size: 13px;
+      color: #666;
+      letter-spacing: 0.3px;
+      margin-bottom: 18px;
+      font-weight: 400;
+    }
+
+    /* 메인 제목 */
     .main-title {
-      font-size: clamp(26px, 4.5vw, 44px); font-weight: 900; line-height: 1.25;
-      color: #0b1840; margin-bottom: 3%; word-break: keep-all;
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1.28;
+      color: #003e74;
+      margin-bottom: 28px;
+      word-break: keep-all;
     }
     .main-title .hl { color: #00aac8; }
+    .main-title .sub {
+      font-size: 36px;
+      font-weight: 900;
+    }
 
+    /* 본문 텍스트 */
     .body-text {
-      font-size: clamp(10px, 1.3vw, 13px); color: #444; line-height: 1.9;
-      margin-bottom: 1%; word-break: keep-all;
+      font-size: 13px;
+      color: #444;
+      line-height: 2;
+      margin-bottom: 6px;
+      word-break: keep-all;
+      max-width: 85%;
     }
     .body-text b { color: #00aac8; font-weight: 700; }
+    .body-text u { color: #00aac8; text-decoration: underline; font-weight: 500; }
 
-    .catchphrase { font-size: clamp(13px, 1.8vw, 17px); font-weight: 800; color: #0b1840; margin: 3% 0; word-break: keep-all; }
+    /* 초대 문구 */
+    .catchphrase {
+      font-size: 17px;
+      font-weight: 800;
+      color: #0b1840;
+      margin: 28px 0 30px 0;
+      word-break: keep-all;
+    }
 
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 2.5%; }
+    /* 정보 그리드 (일시/장소) */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 40px;
+      margin-bottom: 24px;
+      max-width: 85%;
+    }
     .info-label {
-      font-size: clamp(9px, 1.1vw, 12px); font-weight: 800; color: #00aac8;
-      letter-spacing: 2.5px; border-bottom: 1.5px solid #00aac8;
-      padding-bottom: 0.6%; margin-bottom: 1%;
+      font-size: 11px;
+      font-weight: 800;
+      color: #00aac8;
+      letter-spacing: 3px;
+      border-bottom: 2px solid #00aac8;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+      display: inline-block;
     }
-    .info-value { font-size: clamp(13px, 1.8vw, 17px); font-weight: 800; color: #0b1840; line-height: 1.5; }
-    .info-sub { font-size: clamp(11px, 1.4vw, 14px); color: #555; margin-top: 0.4%; }
+    .info-value {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0b1840;
+      line-height: 1.5;
+    }
 
-    .reg-section { margin-bottom: 2.8%; }
-    .reg-value { font-size: clamp(12px, 1.6vw, 16px); font-weight: 700; color: #0b1840; margin-top: 1%; }
+    /* 사전등록 기간 */
+    .reg-section {
+      margin-bottom: 28px;
+      max-width: 85%;
+    }
+    .reg-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0b1840;
+      margin-top: 10px;
+    }
 
-    .schedule-section { margin-bottom: 4%; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1.2%; font-size: clamp(11px, 1.4vw, 14px); }
-    tr { border-bottom: 1px solid rgba(0,170,200,0.15); }
-    td { padding: 0.8% 4px; vertical-align: top; }
-    td:first-child { color: #00aac8; font-weight: 700; white-space: nowrap; width: 14%; }
-    td:last-child { color: #222; }
+    /* 세미나 일정 */
+    .schedule-section {
+      margin-bottom: 36px;
+      max-width: 85%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    tr {
+      border-bottom: 1px solid rgba(0, 170, 200, 0.15);
+    }
+    td {
+      padding: 8px 4px;
+      vertical-align: top;
+    }
+    td:first-child {
+      color: #00aac8;
+      font-weight: 700;
+      white-space: nowrap;
+      width: 130px;
+      padding-right: 24px;
+    }
+    td:last-child {
+      color: #222;
+    }
 
+    /* 사전등록 버튼 */
     .btn-register {
-      display: inline-block; background: #0b1840; color: #fff;
-      padding: 1.8% 6%; border-radius: 10px; font-size: clamp(14px, 2vw, 20px);
-      font-weight: 800; text-decoration: none; letter-spacing: 2px;
-      margin-bottom: 6%; transition: background 0.2s;
+      display: inline-block;
+      background: #0b1840;
+      color: #fff;
+      padding: 14px 48px;
+      border-radius: 10px;
+      font-size: 19px;
+      font-weight: 800;
+      text-decoration: none;
+      letter-spacing: 3px;
+      margin-bottom: 50px;
+      transition: background 0.2s;
     }
-    .btn-register:hover { background: #1a2e6e; }
+    .btn-register:hover {
+      background: #1a2e6e;
+    }
 
+    /* 하단 푸터 */
     .footer {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      border-top: 1px solid rgba(0,0,0,0.1); padding-top: 2%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      padding-top: 20px;
     }
-    .sponsor-rows { display: flex; flex-direction: column; gap: 1.5%; }
-    .sponsor-row { display: flex; align-items: center; gap: 1.2%; }
-    .sponsor-tag { font-size: clamp(9px, 1vw, 11px); font-weight: 700; color: #888; letter-spacing: 1px; width: 28px; }
-    .sponsor-row img { height: clamp(18px, 2.5vw, 26px); object-fit: contain; }
-    .contact { font-size: clamp(10px, 1.1vw, 12px); color: #999; text-align: right; line-height: 1.7; }
-    .contact strong { display: block; color: #777; }
+    .sponsor-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sponsor-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .sponsor-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #888;
+      letter-spacing: 2px;
+      min-width: 32px;
+    }
+    .sponsor-row img {
+      height: 26px;
+      object-fit: contain;
+    }
+    .contact {
+      font-size: 12px;
+      color: #999;
+      text-align: right;
+      line-height: 1.7;
+    }
+    .contact strong {
+      display: block;
+      color: #777;
+      letter-spacing: 3px;
+      font-size: 11px;
+    }
+
+    /* ========= 반응형 — 태블릿 ========= */
+    @media (max-width: 900px) {
+      .poster {
+        padding: 40px 44px 40px 44px;
+      }
+      .main-title { font-size: 34px; }
+      .main-title .sub { font-size: 30px; }
+      .body-text { max-width: 90%; }
+      .info-grid { max-width: 90%; }
+      .schedule-section { max-width: 90%; }
+      .reg-section { max-width: 90%; }
+    }
+
+    /* ========= 반응형 — 모바일 ========= */
+    @media (max-width: 600px) {
+      body {
+        padding: 0;
+        background: #f0fdff;
+      }
+      .poster {
+        min-height: unset;
+        padding: 28px 24px 36px 24px;
+        border-radius: 0;
+      }
+      .poster::before {
+        width: 50%;
+        opacity: 0.35;
+        top: auto;
+        bottom: 0;
+        height: 50%;
+      }
+      .label-top { font-size: 11px; margin-bottom: 12px; }
+      .main-title { font-size: 24px; margin-bottom: 20px; }
+      .main-title .sub { font-size: 22px; }
+      .body-text {
+        font-size: 12px;
+        line-height: 1.85;
+        max-width: 100%;
+      }
+      .catchphrase { font-size: 14px; margin: 20px 0 22px 0; }
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        max-width: 100%;
+      }
+      .info-value { font-size: 14px; }
+      .reg-section { max-width: 100%; }
+      .reg-value { font-size: 13px; }
+      .schedule-section { max-width: 100%; }
+      table { font-size: 12px; }
+      td:first-child { width: 110px; padding-right: 12px; }
+      .btn-register {
+        font-size: 16px;
+        padding: 12px 36px;
+        margin-bottom: 36px;
+      }
+      .footer {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .sponsor-row img { height: 22px; }
+      .contact { text-align: left; font-size: 11px; }
+    }
   </style>
 </head>
 <body>
@@ -90,47 +290,46 @@
   <!-- 상단 서브 레이블 -->
   <p class="label-top">Industry-Specific AI Orchestration Services</p>
 
-  <!-- 메인 제목 — ✏️ 수정 가능 -->
+  <!-- 메인 제목 -->
   <h1 class="main-title">
     실시간 AI 오케스트레이션<br>
     <span class="hl">Vantiq</span> x 스마트게이트가 제시하는<br>
-    AX (AI Transformation)의 미래
+    <span class="sub">AX <span style="font-weight:400;">(AI Transformation)</span>의 미래</span>
   </h1>
 
-  <!-- 본문 설명 — ✏️ 수정 가능 -->
+  <!-- 본문 설명 -->
   <p class="body-text">
-    변화의 속도가 그 어느 때보다 빠른 지금, 지속 가능한 성장을 위한 핵심 동력은 '실시간'과 능력 예상입니다.<br>
-    실시간 지능형 플랫폼 전문 기업 <b>Vantiq</b>와 비즈니스 혁신 파트너 스마트게이트는<br>
-    전략적 파트너십을 통해 다양한 산업 현장이 어떻게 실시간 AI 기술로 혁신하는 새로운 표준을 제시하고자 합니다.
+    변화의 속도가 그 어느 때보다 빠른 지금, 지속 가능한 성장을 위한 핵심 동력은 '실시간 대응 능력'에 있습니다.<br>
+    실시간 지능형 플랫폼 전문 기업 <b>Vantiq</b>와 비즈니스 혁신 파트너 <u>스마트게이트</u>는<br>
+    전략적 파트너십을 통해, 다양한 산업 현장의 난제를 실시간 AI 기술로 해결하는 새로운 표준을 제시하고자 합니다.
   </p>
-  <p class="body-text">
-    본 세미나는 규모와 분야를 떠나 모든 조직이 직면한 인공지능 전환(AX)의 실제적인 전략들을 공유합니다.<br>
-    데이터를 실시간으로 가치화하면서도 AI 오케스트레이션이 어떻게 조직의 미래 경쟁력을 확보할 방법인지 제시합니다.
+  <p class="body-text" style="margin-top: 10px;">
+    본 세미나에서는 규모와 분야를 막론하고 모든 조직이 직면한 인공지능 전환(AX)의 실질적인 해법을 공유합니다.<br>
+    데이터를 실시간으로 가치있게 만드는 AI 오케스트레이션이 어떻게 조직의 미래 경쟁력을 바꾸는지 확인해보시길 바랍니다.
   </p>
 
-  <!-- 초대 문구 — ✏️ 수정 가능 -->
-  <p class="catchphrase">새로운 시대를 준비하는 모든 어린들께 특별한 자리에 초대합니다.</p>
+  <!-- 초대 문구 -->
+  <p class="catchphrase">새로운 시대를 준비하는 모든 여러분들께 특별한 자리에 초대합니다.</p>
 
-  <!-- 일시 / 장소 — ✏️ 수정 가능 -->
+  <!-- 일시 / 장소 -->
   <div class="info-grid">
     <div>
       <div class="info-label">일 &nbsp; 시</div>
-      <div class="info-value">2026.04.28 (TUE), 13:30 ~ 17:10</div>
+      <div class="info-value">2026.04.28 (TUE), 13:30 - 17:10</div>
     </div>
     <div>
       <div class="info-label">장 &nbsp; 소</div>
-      <div class="info-value">양재 엘타워 옆 스포타임</div>
-      <div class="info-sub">스포타임 5F</div>
+      <div class="info-value">양재 엘타워, 멜론홀 (스포타임 5F)</div>
     </div>
   </div>
 
-  <!-- 사전 등록 기간 — ✏️ 수정 가능 -->
+  <!-- 사전등록 기간 -->
   <div class="reg-section">
-    <div class="info-label">사 전 &nbsp; 등 록 &nbsp; 기 간</div>
-    <div class="reg-value">2026.04.13 (MON) ~ 27 (MON) 14:00 까지</div>
+    <div class="info-label">사 전 등 록 &nbsp; 기 간</div>
+    <div class="reg-value">2026.04.13 (MON) ~ 27. (MON) 14:00 까지</div>
   </div>
 
-  <!-- 세미나 일정표 — ✏️ 시간/내용 수정 가능, 행 추가/삭제 가능 -->
+  <!-- 세미나 일정표 -->
   <div class="schedule-section">
     <div class="info-label">세 미 나 &nbsp; 일 정</div>
     <table>
@@ -138,29 +337,26 @@
       <tr><td>14:00 - 14:40</td><td>[Session 1] SmartGate : 공공 안전 (Public Safety)</td></tr>
       <tr><td>14:45 - 15:25</td><td>[Session 2] Vantiq 사례 발표 : D-Resilio</td></tr>
       <tr><td>15:40 - 16:20</td><td>[Session 3] Vantiq 사례 발표 : 제조 자동화</td></tr>
-      <tr><td>16:30 - 17:10</td><td>[Session 4] LS 타리우에너 : IFC 자동화, 제조환경 AI 구축</td></tr>
+      <tr><td>16:30 - 17:10</td><td>[Session 4] LS 티라유텍 : IFC 자동화, 제조환경 AI 구축</td></tr>
     </table>
   </div>
 
-  <!-- 사전 등록 버튼 — register.html 로 이동 -->
+  <!-- 사전 등록 버튼 -->
   <a href="register.html" class="btn-register">사전 등록</a>
 
-  <!-- 하단 주최/후원 로고 + 문의처 (포스터 B 전용) -->
+  <!-- 하단 주최/후원 로고 + 문의처 -->
   <div class="footer">
     <div class="sponsor-rows">
-      <!-- 주최사 로고 — ✏️ 이미지 교체 가능 -->
       <div class="sponsor-row">
         <span class="sponsor-tag">주 최</span>
         <img src="images/logo-smartgate.png" alt="SMARTGATE" />
       </div>
-      <!-- 후원사 로고 — ✏️ 이미지 추가/삭제 가능 -->
       <div class="sponsor-row">
         <span class="sponsor-tag">후 원</span>
         <img src="images/logo-vantiq.png" alt="VANTIQ" />
         <img src="images/logo-nsca.png" alt="국민안전역량협회" />
       </div>
     </div>
-    <!-- ✏️ 문의 이메일 수정 가능 -->
     <div class="contact">
       <strong>문 의 처</strong>
       hightech_sales@smartgate.co.kr
