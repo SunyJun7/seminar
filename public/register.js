@@ -48,11 +48,12 @@ function submitForm() {
     }
   }
 
-  // 연락처 형식 검사 (예: 010-1234-5678 / 02-123-4567)
+  // 연락처 형식 검사 (하이픈 있어도, 없어도 허용)
   const phoneEl = document.getElementById('phone');
-  if (!/^0\d{1,2}-\d{3,4}-\d{4}$/.test(phoneEl.value.trim())) {
+  const phoneRaw = phoneEl.value.trim().replace(/-/g, '');
+  if (!/^0\d{8,10}$/.test(phoneRaw)) {
     phoneEl.classList.add('error-field');
-    showModal('올바른 <strong>연락처 형식</strong>이 아닙니다.<br><small style="color:#888;">예) 010-1234-5678</small>', 'phone');
+    showModal('올바른 <strong>연락처 형식</strong>이 아닙니다.<br><small style="color:#888;">예) 010-1234-5678 또는 01012345678</small>', 'phone');
     return;
   }
 
