@@ -82,6 +82,18 @@
     .footer-logos img { height: clamp(20px, 3vw, 32px); object-fit: contain; }
     .contact { font-size: clamp(10px, 1.1vw, 12px); color: #999; text-align: right; line-height: 1.7; }
     .contact strong { display: block; color: #777; }
+
+    /* 모바일 대응 */
+    @media (max-width: 600px) {
+      body { padding: 0; }
+      .poster {
+        min-height: unset;
+        background-image: none; /* 모바일에선 배경 이미지 숨김 */
+        padding: 8% 6% 10% 6%;
+      }
+      .footer-logos img { height: 22px; }
+      .contact { font-size: 11px; }
+    }
   </style>
 </head>
 <body>
