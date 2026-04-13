@@ -177,8 +177,8 @@ app.post('/api/register', registerLimiter, async (req, res) => {
     return res.status(400).json({ success: false, message: '필수 항목이 누락되었습니다.' });
   }
 
-  // 연락처 형식 검증 (예: 010-1234-5678 / 02-123-4567)
-  if (!/^0\d{1,2}-\d{3,4}-\d{4}$/.test(phone)) {
+  // 연락처 형식 검증 (하이픈 있어도 없어도 허용)
+  if (!/^0\d{8,10}$/.test(phone.replace(/-/g, ''))) {
     return res.status(400).json({ success: false, message: '연락처 형식이 올바르지 않습니다.' });
   }
 
