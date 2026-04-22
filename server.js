@@ -419,33 +419,46 @@ app.get('/api/reviews', adminLimiter, adminAuth, async (req, res) => {
 // -------------------------------------------------------------
 app.get('/api/reviews/export', adminLimiter, adminAuth, async (req, res) => {
   try {
-    const result = await pool.query(
-      'SELECT * FROM seminar_reviews ORDER BY created_at ASC'
+    const [reviewResult, regResult] = await Promise.all([
+      pool.query('SELECT * FROM seminar_reviews ORDER BY created_at ASC'),
+      pool.query('SELECT name, phone FROM seminar_registrations'),
+    ]);
+
+    // 사전등록자 키 셋 (이름 + 하이픈 제거 연락처)
+    const regSet = new Set(
+      regResult.rows.map(r => `${r.name}__${r.phone.replace(/-/g, '')}`)
     );
+
     const workbook = new ExcelJS.Workbook();
-    const sheet    = workbook.addWorksheet('세미나 후기');
+    const sheet    = workbook.addWorksheet('세미나 설문');
     sheet.columns = [
-      { header: 'No',       key: 'id',         width: 8  },
-      { header: '이름',     key: 'name',        width: 15 },
-      { header: '회사명',   key: 'company',     width: 25 },
-      { header: '부서',     key: 'dept',        width: 18 },
-      { header: '연락처',   key: 'phone',       width: 18 },
-      { header: '이메일',   key: 'email',       width: 30 },
-      { header: 'Q1. 전반적 만족도',            key: 'q1', width: 15 },
-      { header: 'Q2. 주제 관심도',              key: 'q2', width: 15 },
-      { header: 'Q3. 업무 도움 여부',           key: 'q3', width: 15 },
-      { header: 'Q4. 이해도 향상 여부',         key: 'q4', width: 15 },
-      { header: 'Q6. 방문 미팅 의향',           key: 'q6', width: 15 },
-      { header: 'Q8. 솔루션 도입 계획',         key: 'q8', width: 18 },
-      { header: 'Q9. 자유 의견',               key: 'q9', width: 40 },
-      { header: '제출일시', key: 'created_at',  width: 22 },
+      { header: 'No',           key: 'no',         width: 6  },
+      { header: '사전등록',     key: 'pre_reg',     width: 10 },
+      { header: '이름',         key: 'name',        width: 15 },
+      { header: '회사명',       key: 'company',     width: 25 },
+      { header: '부서',         key: 'dept',        width: 18 },
+      { header: '연락처',       key: 'phone',       width: 18 },
+      { header: '이메일',       key: 'email',       width: 30 },
+      { header: 'Q1. 전반적 만족도',      key: 'q1', width: 15 },
+      { header: 'Q2. 주제 관심도',        key: 'q2', width: 15 },
+      { header: 'Q3. 업무 도움 여부',     key: 'q3', width: 15 },
+      { header: 'Q4. 이해도 향상 여부',   key: 'q4', width: 15 },
+      { header: 'Q6. 방문 미팅 의향',     key: 'q6', width: 15 },
+      { header: 'Q8. 솔루션 도입 계획',   key: 'q8', width: 18 },
+      { header: 'Q9. 자유 의견',          key: 'q9', width: 40 },
+      { header: '제출일시',     key: 'created_at',  width: 22 },
     ];
     sheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
     sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A237E' } };
-    result.rows.forEach(row => sheet.addRow({
-      ...row,
-      created_at: new Date(row.created_at).toLocaleString('ko-KR')
-    }));
+    reviewResult.rows.forEach((row, i) => {
+      const isReg = regSet.has(`${row.name}__${row.phone.replace(/-/g, '')}`);
+      sheet.addRow({
+        ...row,
+        no: i + 1,
+        pre_reg: isReg ? '✓' : '',
+        created_at: new Date(row.created_at).toLocaleString('ko-KR'),
+      });
+    });
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename="seminar_reviews.xlsx"');
     await workbook.xlsx.write(res);
