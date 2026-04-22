@@ -71,8 +71,6 @@ async function initDB() {
       dept       VARCHAR(100)  NOT NULL,
       phone      VARCHAR(50)   NOT NULL,
       email      VARCHAR(200)  NOT NULL,
-      rating     SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
-      content    TEXT NOT NULL,
       created_at TIMESTAMP DEFAULT NOW()
     )
   `);
@@ -317,8 +315,7 @@ app.delete('/api/registrations/:id', adminLimiter, adminAuth, async (req, res) =
 // 세미나 후기를 DB에 저장합니다. (공개 엔드포인트 — QR 접속자용)
 // -------------------------------------------------------------
 app.post('/api/review', registerLimiter, async (req, res) => {
-  const { name, company, dept, phone, email, rating, content } = req.body;
-  const r = parseInt(rating, 10);
+  const { name, company, dept, phone, email } = req.body;
 
   if (!name || !company || !dept || !phone || !email) {
     return res.status(400).json({ success: false, message: '필수 항목이 누락되었습니다.' });
@@ -329,17 +326,11 @@ app.post('/api/review', registerLimiter, async (req, res) => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ success: false, message: '이메일 형식이 올바르지 않습니다.' });
   }
-  if (!content || !content.trim()) {
-    return res.status(400).json({ success: false, message: '후기 내용을 입력해 주세요.' });
-  }
-  if (!r || r < 1 || r > 5) {
-    return res.status(400).json({ success: false, message: '별점을 선택해 주세요.' });
-  }
 
   try {
     await pool.query(
-      'INSERT INTO seminar_reviews (name, company, dept, phone, email, rating, content) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-      [name.trim(), company.trim(), dept.trim(), phone.trim(), email.trim(), r, content.trim()]
+      'INSERT INTO seminar_reviews (name, company, dept, phone, email) VALUES ($1, $2, $3, $4, $5)',
+      [name.trim(), company.trim(), dept.trim(), phone.trim(), email.trim()]
     );
     res.json({ success: true });
   } catch (err) {
@@ -382,15 +373,12 @@ app.get('/api/reviews/export', adminLimiter, adminAuth, async (req, res) => {
       { header: '부서',   key: 'dept',        width: 18 },
       { header: '연락처', key: 'phone',       width: 18 },
       { header: '이메일', key: 'email',       width: 30 },
-      { header: '별점',   key: 'rating',      width: 8  },
-      { header: '후기',   key: 'content',     width: 60 },
-      { header: '작성일시', key: 'created_at', width: 22 },
+      { header: '제출일시', key: 'created_at', width: 22 },
     ];
     sheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
     sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A237E' } };
     result.rows.forEach(row => sheet.addRow({
       ...row,
-      rating: '★'.repeat(row.rating),
       created_at: new Date(row.created_at).toLocaleString('ko-KR')
     }));
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
