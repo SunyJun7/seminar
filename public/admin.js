@@ -215,17 +215,9 @@ async function loadReviews() {
       <div class="review-item">
         <div>
           <strong style="font-size:14px;">${escapeHtml(r.name)}</strong>
-          <span style="font-size:13px;color:#888;margin-left:8px;">${escapeHtml(r.company)} / ${escapeHtml(r.dept)}</span>
+          <span style="font-size:13px;color:#888;margin-left:8px;">${escapeHtml(r.company)}</span>
         </div>
-        <div style="margin-top:6px;font-size:13px;color:#555;line-height:1.8;">
-          Q1. ${escapeHtml(r.q1 || '-')} &nbsp;|&nbsp;
-          Q2. ${escapeHtml(r.q2 || '-')} &nbsp;|&nbsp;
-          Q3. ${escapeHtml(r.q3 || '-')} &nbsp;|&nbsp;
-          Q4. ${escapeHtml(r.q4 || '-')}<br>
-          Q6. ${escapeHtml(r.q6 || '-')} &nbsp;|&nbsp;
-          Q8. ${escapeHtml(r.q8 || '-')}
-          ${r.q9 ? `<br>Q9. ${escapeHtml(r.q9)}` : ''}
-        </div>
+        <div style="margin-top:4px;font-size:13px;color:#888;">${escapeHtml(r.phone)}</div>
         <div class="review-meta">${new Date(r.created_at).toLocaleString('ko-KR')}</div>
       </div>
     `).join('');
