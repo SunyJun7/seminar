@@ -71,14 +71,32 @@ async function initDB() {
       dept       VARCHAR(100)  NOT NULL,
       phone      VARCHAR(50)   NOT NULL,
       email      VARCHAR(200)  NOT NULL,
+      q1         VARCHAR(50)   NOT NULL DEFAULT '',
+      q2         VARCHAR(50)   NOT NULL DEFAULT '',
+      q3         VARCHAR(50)   NOT NULL DEFAULT '',
+      q4         VARCHAR(50)   NOT NULL DEFAULT '',
+      q6         VARCHAR(50)   NOT NULL DEFAULT '',
+      q8         VARCHAR(50)   NOT NULL DEFAULT '',
+      q9         TEXT                   DEFAULT '',
       created_at TIMESTAMP DEFAULT NOW()
     )
   `);
-  // 기존 테이블에 컬럼이 없으면 추가 (마이그레이션)
-  await pool.query(`ALTER TABLE seminar_reviews ADD COLUMN IF NOT EXISTS company VARCHAR(200) NOT NULL DEFAULT ''`);
-  await pool.query(`ALTER TABLE seminar_reviews ADD COLUMN IF NOT EXISTS dept    VARCHAR(100) NOT NULL DEFAULT ''`);
-  await pool.query(`ALTER TABLE seminar_reviews ADD COLUMN IF NOT EXISTS phone   VARCHAR(50)  NOT NULL DEFAULT ''`);
-  await pool.query(`ALTER TABLE seminar_reviews ADD COLUMN IF NOT EXISTS email   VARCHAR(200) NOT NULL DEFAULT ''`);
+  // 기존 테이블 마이그레이션
+  for (const col of [
+    `company VARCHAR(200) NOT NULL DEFAULT ''`,
+    `dept    VARCHAR(100) NOT NULL DEFAULT ''`,
+    `phone   VARCHAR(50)  NOT NULL DEFAULT ''`,
+    `email   VARCHAR(200) NOT NULL DEFAULT ''`,
+    `q1      VARCHAR(50)  NOT NULL DEFAULT ''`,
+    `q2      VARCHAR(50)  NOT NULL DEFAULT ''`,
+    `q3      VARCHAR(50)  NOT NULL DEFAULT ''`,
+    `q4      VARCHAR(50)  NOT NULL DEFAULT ''`,
+    `q6      VARCHAR(50)  NOT NULL DEFAULT ''`,
+    `q8      VARCHAR(50)  NOT NULL DEFAULT ''`,
+    `q9      TEXT         DEFAULT ''`,
+  ]) {
+    await pool.query(`ALTER TABLE seminar_reviews ADD COLUMN IF NOT EXISTS ${col}`);
+  }
   console.log('DB 테이블 준비 완료');
 }
 
@@ -315,7 +333,7 @@ app.delete('/api/registrations/:id', adminLimiter, adminAuth, async (req, res) =
 // 세미나 후기를 DB에 저장합니다. (공개 엔드포인트 — QR 접속자용)
 // -------------------------------------------------------------
 app.post('/api/review', registerLimiter, async (req, res) => {
-  const { name, company, dept, phone, email } = req.body;
+  const { name, company, dept, phone, email, q1, q2, q3, q4, q6, q8, q9 } = req.body;
 
   if (!name || !company || !dept || !phone || !email) {
     return res.status(400).json({ success: false, message: '필수 항목이 누락되었습니다.' });
@@ -329,12 +347,14 @@ app.post('/api/review', registerLimiter, async (req, res) => {
 
   try {
     await pool.query(
-      'INSERT INTO seminar_reviews (name, company, dept, phone, email) VALUES ($1, $2, $3, $4, $5)',
-      [name.trim(), company.trim(), dept.trim(), phone.trim(), email.trim()]
+      `INSERT INTO seminar_reviews (name, company, dept, phone, email, q1, q2, q3, q4, q6, q8, q9)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+      [name.trim(), company.trim(), dept.trim(), phone.trim(), email.trim(),
+       q1||'', q2||'', q3||'', q4||'', q6||'', q8||'', q9||'']
     );
     res.json({ success: true });
   } catch (err) {
-    console.error('후기 저장 오류:', err.message);
+    console.error('설문 저장 오류:', err.message);
     res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
   }
 });
@@ -367,13 +387,20 @@ app.get('/api/reviews/export', adminLimiter, adminAuth, async (req, res) => {
     const workbook = new ExcelJS.Workbook();
     const sheet    = workbook.addWorksheet('세미나 후기');
     sheet.columns = [
-      { header: 'No',     key: 'id',         width: 8  },
-      { header: '이름',   key: 'name',        width: 15 },
-      { header: '회사명', key: 'company',     width: 25 },
-      { header: '부서',   key: 'dept',        width: 18 },
-      { header: '연락처', key: 'phone',       width: 18 },
-      { header: '이메일', key: 'email',       width: 30 },
-      { header: '제출일시', key: 'created_at', width: 22 },
+      { header: 'No',       key: 'id',         width: 8  },
+      { header: '이름',     key: 'name',        width: 15 },
+      { header: '회사명',   key: 'company',     width: 25 },
+      { header: '부서',     key: 'dept',        width: 18 },
+      { header: '연락처',   key: 'phone',       width: 18 },
+      { header: '이메일',   key: 'email',       width: 30 },
+      { header: 'Q1. 전반적 만족도',            key: 'q1', width: 15 },
+      { header: 'Q2. 주제 관심도',              key: 'q2', width: 15 },
+      { header: 'Q3. 업무 도움 여부',           key: 'q3', width: 15 },
+      { header: 'Q4. 이해도 향상 여부',         key: 'q4', width: 15 },
+      { header: 'Q6. 방문 미팅 의향',           key: 'q6', width: 15 },
+      { header: 'Q8. 솔루션 도입 계획',         key: 'q8', width: 18 },
+      { header: 'Q9. 자유 의견',               key: 'q9', width: 40 },
+      { header: '제출일시', key: 'created_at',  width: 22 },
     ];
     sheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
     sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A237E' } };
