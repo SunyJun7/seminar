@@ -97,9 +97,9 @@ async function initDB() {
   ]) {
     await pool.query(`ALTER TABLE seminar_reviews ADD COLUMN IF NOT EXISTS ${col}`);
   }
-  // 기존 rating/content 컬럼이 NOT NULL이면 nullable로 변경
-  await pool.query(`ALTER TABLE seminar_reviews ALTER COLUMN rating  DROP NOT NULL`).catch(() => {});
-  await pool.query(`ALTER TABLE seminar_reviews ALTER COLUMN content DROP NOT NULL`).catch(() => {});
+  // 기존 rating/content 컬럼 완전 삭제
+  await pool.query(`ALTER TABLE seminar_reviews DROP COLUMN IF EXISTS rating`);
+  await pool.query(`ALTER TABLE seminar_reviews DROP COLUMN IF EXISTS content`);
   console.log('DB 테이블 준비 완료');
 }
 
