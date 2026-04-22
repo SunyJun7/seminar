@@ -81,7 +81,7 @@ async function initDB() {
       created_at TIMESTAMP DEFAULT NOW()
     )
   `);
-  // 기존 테이블 마이그레이션
+  // 기존 테이블 마이그레이션 — 신규 컬럼 추가
   for (const col of [
     `company VARCHAR(200) NOT NULL DEFAULT ''`,
     `dept    VARCHAR(100) NOT NULL DEFAULT ''`,
@@ -97,6 +97,9 @@ async function initDB() {
   ]) {
     await pool.query(`ALTER TABLE seminar_reviews ADD COLUMN IF NOT EXISTS ${col}`);
   }
+  // 기존 rating/content 컬럼이 NOT NULL이면 nullable로 변경
+  await pool.query(`ALTER TABLE seminar_reviews ALTER COLUMN rating  DROP NOT NULL`).catch(() => {});
+  await pool.query(`ALTER TABLE seminar_reviews ALTER COLUMN content DROP NOT NULL`).catch(() => {});
   console.log('DB 테이블 준비 완료');
 }
 
