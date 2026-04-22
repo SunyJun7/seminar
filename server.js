@@ -306,6 +306,41 @@ app.get('/api/export', adminLimiter, adminAuth, async (req, res) => {
 });
 
 // -------------------------------------------------------------
+// DELETE /api/reviews/:id
+// 설문 항목 한 개를 DB에서 삭제합니다.
+// -------------------------------------------------------------
+app.delete('/api/reviews/:id', adminLimiter, adminAuth, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).json({ success: false, message: '잘못된 ID입니다.' });
+
+  try {
+    const result = await pool.query('DELETE FROM seminar_reviews WHERE id = $1', [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, message: '해당 항목을 찾을 수 없습니다.' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error('설문 삭제 오류:', err.message);
+    res.status(500).json({ success: false, message: '삭제 중 오류가 발생했습니다.' });
+  }
+});
+
+// -------------------------------------------------------------
+// DELETE /api/reviews/:id
+app.delete('/api/reviews/:id', adminLimiter, adminAuth, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).json({ success: false, message: '잘못된 ID입니다.' });
+  try {
+    const result = await pool.query('DELETE FROM seminar_reviews WHERE id = $1', [id]);
+    if (result.rowCount === 0) return res.status(404).json({ success: false, message: '항목을 찾을 수 없습니다.' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('설문 삭제 오류:', err.message);
+    res.status(500).json({ success: false, message: '삭제 중 오류가 발생했습니다.' });
+  }
+});
+
+// -------------------------------------------------------------
 // DELETE /api/registrations/:id
 // 신청자 한 명을 DB에서 삭제합니다. (테스트 데이터 정리용)
 // -------------------------------------------------------------

@@ -1,22 +1,31 @@
 let registrations = [];
 
-// 신청자 목록 불러오기
+// ===== 탭 전환 =====
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ===== 신청자 목록 =====
 async function loadRegistrations() {
   try {
-    const res  = await fetch('/api/registrations');
-    const data = await res.json();
+    const res   = await fetch('/api/registrations');
+    const data  = await res.json();
     const tbody = document.getElementById('tableBody');
     const countEl = document.getElementById('countText');
 
     if (!Array.isArray(data) || data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" class="empty-state">아직 신청자가 없습니다.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" class="empty-state">아직 신청자가 없습니다.</td></tr>`;
       countEl.textContent = '총 0명';
       return;
     }
 
     registrations = data;
     countEl.textContent = `총 ${data.length}명`;
-
     tbody.innerHTML = data.map((row, i) => `
       <tr>
         <td class="no">${i + 1}</td>
@@ -31,45 +40,84 @@ async function loadRegistrations() {
       </tr>
     `).join('');
 
-    tbody.addEventListener('click', handleTableClick);
-
+    tbody.addEventListener('click', e => {
+      const btn = e.target.closest('.btn-row-delete');
+      if (btn) deleteRegistration(btn.dataset.id);
+    });
   } catch {
     document.getElementById('tableBody').innerHTML =
-      `<tr><td colspan="9" class="empty-state">데이터를 불러오지 못했습니다.<br>서버 연결을 확인해 주세요.</td></tr>`;
+      `<tr><td colspan="9" class="empty-state">데이터를 불러오지 못했습니다.</td></tr>`;
   }
 }
 
-// 테이블 행 클릭 이벤트 위임
-function handleTableClick(e) {
-  const btn = e.target.closest('.btn-row-delete');
-  if (btn) deleteRegistration(btn.dataset.id);
-}
-
-// 신청자 삭제
 async function deleteRegistration(id) {
   if (!confirm('이 신청자를 삭제하시겠습니까?')) return;
   try {
     const res = await fetch(`/api/registrations/${id}`, { method: 'DELETE' });
-    if (res.ok) {
-      await loadRegistrations();
-    } else {
-      alert('삭제에 실패했습니다.');
+    if (res.ok) await loadRegistrations();
+    else alert('삭제에 실패했습니다.');
+  } catch { alert('오류가 발생했습니다.'); }
+}
+
+// ===== 설문 목록 =====
+async function loadReviews() {
+  try {
+    const res  = await fetch('/api/reviews');
+    const list = await res.json();
+    const el   = document.getElementById('reviewList');
+    const countEl = document.getElementById('reviewCountText');
+
+    if (!Array.isArray(list) || list.length === 0) {
+      el.innerHTML = '<div class="empty-state">아직 설문 응답이 없습니다.</div>';
+      countEl.textContent = '총 0명';
+      return;
     }
+
+    countEl.textContent = `총 ${list.length}명`;
+    el.innerHTML = list.map(r => `
+      <div class="review-item">
+        <div class="review-item-info">
+          <span class="review-name">${escapeHtml(r.name)}</span>
+          <span class="review-company">${escapeHtml(r.company)}</span>
+          <div class="review-phone">${escapeHtml(r.phone)}</div>
+          <div class="review-meta">${new Date(r.created_at).toLocaleString('ko-KR')}</div>
+        </div>
+        <button class="btn-row-delete" data-id="${r.id}">삭제</button>
+      </div>
+    `).join('');
+
+    el.addEventListener('click', e => {
+      const btn = e.target.closest('.btn-row-delete');
+      if (btn) deleteReview(btn.dataset.id);
+    });
   } catch {
-    alert('오류가 발생했습니다.');
+    document.getElementById('reviewList').innerHTML =
+      '<div class="empty-state">데이터를 불러오지 못했습니다.</div>';
   }
 }
 
-// XSS 방지: 특수문자 이스케이프
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+async function deleteReview(id) {
+  if (!confirm('이 설문 항목을 삭제하시겠습니까?')) return;
+  try {
+    const res = await fetch(`/api/reviews/${id}`, { method: 'DELETE' });
+    if (res.ok) await loadReviews();
+    else alert('삭제에 실패했습니다.');
+  } catch { alert('오류가 발생했습니다.'); }
 }
 
-// 업로드된 파일 목록 불러오기
+// ===== 이메일 전체 복사 =====
+document.getElementById('btnCopyEmails').addEventListener('click', () => {
+  if (registrations.length === 0) { alert('신청자가 없습니다.'); return; }
+  const emails = registrations.map(r => r.email).join(', ');
+  navigator.clipboard.writeText(emails).then(() => {
+    const btn = document.getElementById('btnCopyEmails');
+    btn.textContent = '✅ 복사됨!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 이메일 전체 복사'; btn.classList.remove('copied'); }, 2000);
+  });
+});
+
+// ===== 파일 업로드/목록 =====
 async function loadFiles() {
   try {
     const res  = await fetch('/api/files');
@@ -94,15 +142,18 @@ async function loadFiles() {
       </div>
     `).join('');
 
-    // 이벤트 위임 — 동적 생성 버튼에 인라인 onclick 없이 처리
-    el.addEventListener('click', handleFileListClick);
+    el.addEventListener('click', e => {
+      const delBtn  = e.target.closest('.btn-delete');
+      const copyBtn = e.target.closest('.btn-copylink');
+      if (delBtn)  deleteFile(delBtn.dataset.filename);
+      if (copyBtn) copyFileLink(copyBtn);
+    });
   } catch {
     document.getElementById('fileList').innerHTML =
       '<span style="font-size:13px;color:#c62828;">파일 목록을 불러오지 못했습니다.</span>';
   }
 }
 
-// 파일 업로드
 async function uploadFile() {
   const input = document.getElementById('fileInput');
   const file  = input.files[0];
@@ -110,7 +161,7 @@ async function uploadFile() {
 
   const btn = document.getElementById('btnUpload');
   const msg = document.getElementById('uploadMsg');
-  btn.disabled = true;
+  btn.disabled    = true;
   msg.textContent = '업로드 중...';
   msg.className   = 'upload-msg';
 
@@ -120,7 +171,6 @@ async function uploadFile() {
   try {
     const res  = await fetch('/api/upload', { method: 'POST', body: formData });
     const data = await res.json();
-
     if (res.ok && data.success) {
       msg.className   = 'upload-msg success';
       msg.textContent = `업로드 완료: ${data.filename}`;
@@ -133,21 +183,10 @@ async function uploadFile() {
     msg.className   = 'upload-msg error';
     msg.textContent = '업로드 중 오류가 발생했습니다.';
   }
-
-  btn.disabled  = false;
-  input.value   = '';
+  btn.disabled = false;
+  input.value  = '';
 }
 
-// 파일 목록 버튼 이벤트 위임 처리
-function handleFileListClick(e) {
-  const delBtn  = e.target.closest('.btn-delete');
-  const copyBtn = e.target.closest('.btn-copylink');
-
-  if (delBtn)  deleteFile(delBtn.dataset.filename);
-  if (copyBtn) copyFileLink(copyBtn);
-}
-
-// 파일 다운로드 링크 복사
 function copyFileLink(btn) {
   const url = `${location.origin}/downloads/${encodeURIComponent(btn.dataset.filename)}`;
   navigator.clipboard.writeText(url).then(() => {
@@ -157,74 +196,23 @@ function copyFileLink(btn) {
   });
 }
 
-// 파일 삭제
 async function deleteFile(filename) {
   if (!confirm(`"${filename}" 파일을 삭제하시겠습니까?`)) return;
-
   try {
     const res = await fetch(`/api/files/${encodeURIComponent(filename)}`, { method: 'DELETE' });
-    if (res.ok) {
-      await loadFiles();
-    } else {
-      alert('파일 삭제에 실패했습니다.');
-    }
-  } catch {
-    alert('오류가 발생했습니다.');
-  }
+    if (res.ok) await loadFiles();
+    else alert('파일 삭제에 실패했습니다.');
+  } catch { alert('오류가 발생했습니다.'); }
 }
 
-// 이메일 전체 복사 (세미콜론 구분 — Outlook/Gmail BCC 바로 붙여넣기 가능)
-function copyEmails() {
-  if (registrations.length === 0) {
-    alert('신청자가 없습니다.');
-    return;
-  }
-
-  const emails = registrations.map(r => r.email).join(', ');
-  navigator.clipboard.writeText(emails).then(() => {
-    const btn = document.getElementById('btnCopyEmails');
-    btn.textContent = '✅ 복사됨!';
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = '📋 이메일 전체 복사';
-      btn.classList.remove('copied');
-    }, 2000);
-  });
-}
-
-document.getElementById('btnCopyEmails').addEventListener('click', copyEmails);
-
-document.getElementById('btnUpload').addEventListener('click', () => {
-  document.getElementById('fileInput').click();
-});
+document.getElementById('btnUpload').addEventListener('click', () => document.getElementById('fileInput').click());
 document.getElementById('fileInput').addEventListener('change', uploadFile);
 
-// 후기 목록 불러오기
-async function loadReviews() {
-  try {
-    const res  = await fetch('/api/reviews');
-    const list = await res.json();
-    const el   = document.getElementById('reviewList');
-
-    if (!Array.isArray(list) || list.length === 0) {
-      el.innerHTML = '<span style="font-size:13px;color:#aaa;">아직 후기가 없습니다.</span>';
-      return;
-    }
-
-    el.innerHTML = list.map(r => `
-      <div class="review-item">
-        <div>
-          <strong style="font-size:14px;">${escapeHtml(r.name)}</strong>
-          <span style="font-size:13px;color:#888;margin-left:8px;">${escapeHtml(r.company)}</span>
-        </div>
-        <div style="margin-top:4px;font-size:13px;color:#888;">${escapeHtml(r.phone)}</div>
-        <div class="review-meta">${new Date(r.created_at).toLocaleString('ko-KR')}</div>
-      </div>
-    `).join('');
-  } catch {
-    document.getElementById('reviewList').innerHTML =
-      '<span style="font-size:13px;color:#c62828;">후기를 불러오지 못했습니다.</span>';
-  }
+// ===== XSS 방지 =====
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 loadRegistrations();

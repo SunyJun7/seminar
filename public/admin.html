@@ -3,10 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>관리자 | 신청자 목록</title>
+  <title>관리자 | SmartGate 세미나</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* 관리자 페이지 전용 스타일 */
+    /* 탭 네비게이션 */
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid #e0e3f0;
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #888;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab-btn.active { color: #1a237e; border-bottom-color: #1a237e; }
+    .tab-btn:hover:not(.active) { color: #555; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* 헤더 */
     .admin-header {
       display: flex;
       align-items: center;
@@ -15,72 +40,44 @@
       flex-wrap: wrap;
       gap: 12px;
     }
-    .admin-header h2 {
-      font-size: 22px;
-      font-weight: 700;
-      color: #1a237e;
-    }
-    .admin-header .count {
-      font-size: 14px;
-      color: #888;
-      margin-top: 4px;
-    }
+    .admin-header h2 { font-size: 22px; font-weight: 700; color: #1a237e; }
+    .admin-header .count { font-size: 14px; color: #888; margin-top: 4px; }
+
+    /* 버튼 */
     .btn-export {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #1b5e20;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.2s;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #1b5e20; color: #fff; border: none; border-radius: 8px;
+      padding: 10px 20px; font-size: 14px; font-weight: 700; cursor: pointer;
+      text-decoration: none; transition: background 0.2s;
     }
     .btn-export:hover { background: #2e7d32; }
     .btn-copy {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #1a237e;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #1a237e; color: #fff; border: none; border-radius: 8px;
+      padding: 10px 20px; font-size: 14px; font-weight: 700; cursor: pointer;
       transition: background 0.2s;
     }
     .btn-copy:hover { background: #283593; }
     .btn-copy.copied { background: #2e7d32; }
 
-    /* 자료 업로드 섹션 */
+    /* 업로드 섹션 */
     .upload-section {
-      background: #f8f9ff;
-      border: 1px solid #e0e3f0;
-      border-radius: 12px;
-      padding: 20px 24px;
-      margin-bottom: 24px;
+      background: #f8f9ff; border: 1px solid #e0e3f0;
+      border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;
     }
     .upload-section h3 { font-size: 15px; font-weight: 700; color: #1a237e; margin-bottom: 14px; }
     .upload-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .btn-upload {
       display: inline-flex; align-items: center; gap: 6px;
       background: #37474f; color: #fff; border: none; border-radius: 8px;
-      padding: 9px 18px; font-size: 14px; font-weight: 700; cursor: pointer;
-      transition: background 0.2s;
+      padding: 9px 18px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s;
     }
     .btn-upload:hover:not(:disabled) { background: #455a64; }
     .btn-upload:disabled { opacity: 0.5; cursor: not-allowed; }
     .file-list { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
     .file-item {
       display: flex; align-items: center; justify-content: space-between;
-      background: #fff; border: 1px solid #e0e3f0; border-radius: 8px;
-      padding: 9px 14px; font-size: 13px;
+      background: #fff; border: 1px solid #e0e3f0; border-radius: 8px; padding: 9px 14px; font-size: 13px;
     }
     .file-item .file-name { color: #333; font-weight: 600; }
     .file-item .file-meta { color: #aaa; font-size: 12px; margin-left: 8px; }
@@ -96,163 +93,130 @@
     .btn-copylink:hover { background: #e8eaf6; }
     .btn-row-delete {
       background: none; border: 1px solid #e53935; color: #e53935;
-      border-radius: 6px; padding: 3px 10px; font-size: 12px; cursor: pointer;
-      white-space: nowrap;
+      border-radius: 6px; padding: 3px 10px; font-size: 12px; cursor: pointer; white-space: nowrap;
     }
     .btn-row-delete:hover { background: #ffebee; }
     .upload-msg { font-size: 13px; margin-top: 8px; }
     .upload-msg.success { color: #2e7d32; }
     .upload-msg.error   { color: #c62828; }
 
-    /* 후기 목록 */
-    .review-item {
-      background: #fff;
-      border: 1px solid #e0e3f0;
-      border-radius: 8px;
-      padding: 12px 16px;
-      margin-bottom: 8px;
-    }
-    .review-item .review-meta {
-      font-size: 12px;
-      color: #aaa;
-      margin-top: 6px;
-    }
-    .review-stars { color: #f5a623; font-size: 16px; }
-
     /* 테이블 */
-    .table-wrap {
-      overflow-x: auto;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      font-size: 14px;
-    }
-    thead tr {
-      background: #1a237e;
-      color: #fff;
-    }
-    thead th {
-      padding: 12px 14px;
-      text-align: left;
-      white-space: nowrap;
-      font-weight: 600;
-    }
-    tbody tr {
-      border-bottom: 1px solid #f0f0f0;
-      transition: background 0.15s;
-    }
+    .table-wrap { overflow-x: auto; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+    table { width: 100%; border-collapse: collapse; background: #fff; font-size: 14px; }
+    thead tr { background: #1a237e; color: #fff; }
+    thead th { padding: 12px 14px; text-align: left; white-space: nowrap; font-weight: 600; }
+    tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.15s; }
     tbody tr:hover { background: #f5f7ff; }
-    tbody td {
-      padding: 11px 14px;
-      color: #333;
-      vertical-align: middle;
-    }
+    tbody td { padding: 11px 14px; color: #333; vertical-align: middle; }
     tbody td.no { color: #aaa; font-size: 12px; }
 
-    /* 빈 상태 */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #aaa;
-      font-size: 15px;
+    /* 설문 목록 */
+    .review-item {
+      display: flex; align-items: center; justify-content: space-between;
+      background: #fff; border: 1px solid #e0e3f0; border-radius: 8px;
+      padding: 12px 16px; margin-bottom: 8px; gap: 12px;
+    }
+    .review-item-info { flex: 1; min-width: 0; }
+    .review-item-info .review-name { font-size: 14px; font-weight: 700; color: #1a237e; }
+    .review-item-info .review-company { font-size: 13px; color: #888; margin-left: 8px; }
+    .review-item-info .review-phone { font-size: 13px; color: #aaa; margin-top: 3px; }
+    .review-item-info .review-meta { font-size: 12px; color: #bbb; margin-top: 4px; }
+
+    /* QR 섹션 */
+    .qr-section {
+      display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 20px;
     }
 
-    /* 로딩 */
-    .loading {
-      text-align: center;
-      padding: 60px;
-      color: #888;
-    }
+    .empty-state { text-align: center; padding: 60px 20px; color: #aaa; font-size: 15px; }
+    .loading { text-align: center; padding: 60px; color: #888; }
   </style>
 </head>
 <body>
   <div class="container" style="max-width:1000px;">
 
-    <!-- 세미나 자료 업로드 섹션 -->
-    <div class="upload-section">
-      <h3>📂 세미나 자료 관리</h3>
-      <div class="upload-row">
-        <input type="file" id="fileInput" accept=".pdf" style="display:none">
-        <button class="btn-upload" id="btnUpload">
-          ⬆️ PDF 업로드
-        </button>
-        <span style="font-size:13px;color:#888;">PDF 파일만 가능 · 최대 50MB</span>
-      </div>
-      <div id="uploadMsg" class="upload-msg"></div>
-      <div id="fileList" class="file-list"></div>
+    <!-- 탭 네비게이션 -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="tab-reg">📋 사전 신청자</button>
+      <button class="tab-btn" data-tab="tab-review">📝 설문 목록</button>
+      <button class="tab-btn" data-tab="tab-files">📂 자료 관리</button>
     </div>
 
-    <div class="admin-header">
-      <div>
-        <!-- ✏️ [수정] 관리자 페이지 제목 -->
-        <h2>신청자 목록</h2>
-        <div class="count" id="countText">불러오는 중...</div>
+    <!-- ===== 탭1: 사전 신청자 ===== -->
+    <div class="tab-panel active" id="tab-reg">
+      <div class="admin-header">
+        <div>
+          <h2>사전 신청자 목록</h2>
+          <div class="count" id="countText">불러오는 중...</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <a href="/api/export" class="btn-export">📥 Excel 다운로드</a>
+          <button class="btn-copy" id="btnCopyEmails">📋 이메일 전체 복사</button>
+        </div>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <!-- Excel 다운로드 버튼 - /api/export 로 연결됨 (수정 불필요) -->
-        <a href="/api/export" class="btn-export">
-          📥 Excel 다운로드
-        </a>
-        <!-- 이메일 전체 복사 -->
-        <button class="btn-copy" id="btnCopyEmails">
-          📋 이메일 전체 복사
-        </button>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>이름</th>
+              <th>회사명</th>
+              <th>직책</th>
+              <th>연락처</th>
+              <th>이메일</th>
+              <th>관심분야</th>
+              <th>신청일시</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="9" class="loading">데이터를 불러오는 중입니다...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <!-- ✏️ [수정] 컬럼 헤더명 변경 가능 -->
-            <th>No</th>
-            <th>이름</th>
-            <th>회사명</th>
-            <th>직책</th>
-            <th>연락처</th>
-            <th>이메일</th>
-            <th>관심분야</th>
-            <th>신청일시</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="tableBody">
-          <tr>
-            <td colspan="9" class="loading">데이터를 불러오는 중입니다...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <!-- ===== 탭2: 설문 목록 ===== -->
+    <div class="tab-panel" id="tab-review">
+      <div class="admin-header">
+        <div>
+          <h2>설문 응답 목록</h2>
+          <div class="count" id="reviewCountText">불러오는 중...</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <a href="/api/reviews/export" class="btn-export">📥 Excel 다운로드</a>
+        </div>
+      </div>
 
-    <!-- 후기 관리 섹션 -->
-    <div class="upload-section" style="margin-top:32px;">
-      <h3>💬 세미나 후기</h3>
-      <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px;">
-        <!-- QR 코드 -->
+      <!-- QR 코드 -->
+      <div class="qr-section">
         <div style="text-align:center;">
-          <img id="reviewQr" src="/api/review-qr" alt="후기 QR" style="width:120px;height:120px;border:1px solid #e0e3f0;border-radius:8px;" />
-          <div style="font-size:11px;color:#888;margin-top:4px;">후기 작성 QR</div>
-        </div>
-        <!-- 버튼 -->
-        <div style="display:flex;flex-direction:column;gap:8px;justify-content:center;">
-          <a href="/api/reviews/export" class="btn-export" style="font-size:13px;padding:8px 16px;">
-            📥 후기 Excel 다운로드
-          </a>
+          <img id="reviewQr" src="/api/review-qr" alt="설문 QR" style="width:120px;height:120px;border:1px solid #e0e3f0;border-radius:8px;" />
+          <div style="font-size:11px;color:#888;margin-top:4px;">설문 작성 QR</div>
         </div>
       </div>
-      <div id="reviewList"></div>
+
+      <div id="reviewList"><div class="loading">데이터를 불러오는 중입니다...</div></div>
     </div>
 
-    <div style="text-align:center; margin-top:20px;">
-      <a href="index.html" style="color:#888; font-size:13px; text-decoration:none;">← 메인으로</a>
+    <!-- ===== 탭3: 자료 관리 ===== -->
+    <div class="tab-panel" id="tab-files">
+      <div class="upload-section" style="margin-bottom:0;">
+        <h3>📂 세미나 자료 관리</h3>
+        <div class="upload-row">
+          <input type="file" id="fileInput" accept=".pdf" style="display:none">
+          <button class="btn-upload" id="btnUpload">⬆️ PDF 업로드</button>
+          <span style="font-size:13px;color:#888;">PDF 파일만 가능 · 최대 50MB</span>
+        </div>
+        <div id="uploadMsg" class="upload-msg"></div>
+        <div id="fileList" class="file-list"></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:24px;">
+      <a href="index.html" style="color:#888;font-size:13px;text-decoration:none;">← 메인으로</a>
     </div>
 
   </div>
-
   <script src="admin.js"></script>
 </body>
 </html>
