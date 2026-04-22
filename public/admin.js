@@ -60,32 +60,49 @@ async function deleteRegistration(id) {
 }
 
 // ===== 설문 목록 =====
+function normalizePhone(phone) {
+  return String(phone || '').replace(/-/g, '').trim();
+}
+
 async function loadReviews() {
   try {
-    const res  = await fetch('/api/reviews');
-    const list = await res.json();
+    const [reviewRes, regRes] = await Promise.all([
+      fetch('/api/reviews'),
+      fetch('/api/registrations'),
+    ]);
+    const list = await reviewRes.json();
+    const regs = await regRes.json();
     const el   = document.getElementById('reviewList');
     const countEl = document.getElementById('reviewCountText');
 
+    // 사전등록자 키 셋 (이름 + 정규화된 연락처)
+    const regSet = new Set(
+      (Array.isArray(regs) ? regs : []).map(r => `${r.name}__${normalizePhone(r.phone)}`)
+    );
+
     if (!Array.isArray(list) || list.length === 0) {
-      el.innerHTML = '<tr><td colspan="8" class="empty-state">아직 설문 응답이 없습니다.</td></tr>';
+      el.innerHTML = '<tr><td colspan="9" class="empty-state">아직 설문 응답이 없습니다.</td></tr>';
       countEl.textContent = '총 0명';
       return;
     }
 
     countEl.textContent = `총 ${list.length}명`;
-    el.innerHTML = list.map((r, i) => `
-      <tr>
-        <td class="no">${i + 1}</td>
-        <td>${escapeHtml(r.name)}</td>
-        <td>${escapeHtml(r.company)}</td>
-        <td>${escapeHtml(r.dept)}</td>
-        <td>${escapeHtml(r.phone)}</td>
-        <td>${escapeHtml(r.email)}</td>
-        <td>${new Date(r.created_at).toLocaleString('ko-KR')}</td>
-        <td><button class="btn-row-delete" data-id="${r.id}">삭제</button></td>
-      </tr>
-    `).join('');
+    el.innerHTML = list.map((r, i) => {
+      const isReg = regSet.has(`${r.name}__${normalizePhone(r.phone)}`);
+      return `
+        <tr>
+          <td class="no">${i + 1}</td>
+          <td style="text-align:center;font-size:16px;">${isReg ? '✅' : ''}</td>
+          <td>${escapeHtml(r.name)}</td>
+          <td>${escapeHtml(r.company)}</td>
+          <td>${escapeHtml(r.dept)}</td>
+          <td>${escapeHtml(r.phone)}</td>
+          <td>${escapeHtml(r.email)}</td>
+          <td>${new Date(r.created_at).toLocaleString('ko-KR')}</td>
+          <td><button class="btn-row-delete" data-id="${r.id}">삭제</button></td>
+        </tr>
+      `;
+    }).join('');
 
     el.addEventListener('click', e => {
       const btn = e.target.closest('.btn-row-delete');
@@ -93,7 +110,7 @@ async function loadReviews() {
     });
   } catch {
     document.getElementById('reviewList').innerHTML =
-      '<tr><td colspan="8" class="empty-state">데이터를 불러오지 못했습니다.</td></tr>';
+      '<tr><td colspan="9" class="empty-state">데이터를 불러오지 못했습니다.</td></tr>';
   }
 }
 
