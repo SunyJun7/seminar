@@ -68,22 +68,23 @@ async function loadReviews() {
     const countEl = document.getElementById('reviewCountText');
 
     if (!Array.isArray(list) || list.length === 0) {
-      el.innerHTML = '<div class="empty-state">아직 설문 응답이 없습니다.</div>';
+      el.innerHTML = '<tr><td colspan="8" class="empty-state">아직 설문 응답이 없습니다.</td></tr>';
       countEl.textContent = '총 0명';
       return;
     }
 
     countEl.textContent = `총 ${list.length}명`;
-    el.innerHTML = list.map(r => `
-      <div class="review-item">
-        <div class="review-item-info">
-          <span class="review-name">${escapeHtml(r.name)}</span>
-          <span class="review-company">${escapeHtml(r.company)}</span>
-          <div class="review-phone">${escapeHtml(r.phone)}</div>
-          <div class="review-meta">${new Date(r.created_at).toLocaleString('ko-KR')}</div>
-        </div>
-        <button class="btn-row-delete" data-id="${r.id}">삭제</button>
-      </div>
+    el.innerHTML = list.map((r, i) => `
+      <tr>
+        <td class="no">${i + 1}</td>
+        <td>${escapeHtml(r.name)}</td>
+        <td>${escapeHtml(r.company)}</td>
+        <td>${escapeHtml(r.dept)}</td>
+        <td>${escapeHtml(r.phone)}</td>
+        <td>${escapeHtml(r.email)}</td>
+        <td>${new Date(r.created_at).toLocaleString('ko-KR')}</td>
+        <td><button class="btn-row-delete" data-id="${r.id}">삭제</button></td>
+      </tr>
     `).join('');
 
     el.addEventListener('click', e => {
@@ -92,7 +93,7 @@ async function loadReviews() {
     });
   } catch {
     document.getElementById('reviewList').innerHTML =
-      '<div class="empty-state">데이터를 불러오지 못했습니다.</div>';
+      '<tr><td colspan="8" class="empty-state">데이터를 불러오지 못했습니다.</td></tr>';
   }
 }
 
