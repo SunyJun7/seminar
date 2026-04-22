@@ -66,12 +66,21 @@ async function initDB() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS seminar_reviews (
       id         SERIAL PRIMARY KEY,
-      name       VARCHAR(100),            -- 작성자 이름 (선택)
+      name       VARCHAR(100)  NOT NULL,
+      company    VARCHAR(200)  NOT NULL,
+      dept       VARCHAR(100)  NOT NULL,
+      phone      VARCHAR(50)   NOT NULL,
+      email      VARCHAR(200)  NOT NULL,
       rating     SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
-      content    TEXT NOT NULL,           -- 후기 내용
+      content    TEXT NOT NULL,
       created_at TIMESTAMP DEFAULT NOW()
     )
   `);
+  // 기존 테이블에 컬럼이 없으면 추가 (마이그레이션)
+  await pool.query(`ALTER TABLE seminar_reviews ADD COLUMN IF NOT EXISTS company VARCHAR(200) NOT NULL DEFAULT ''`);
+  await pool.query(`ALTER TABLE seminar_reviews ADD COLUMN IF NOT EXISTS dept    VARCHAR(100) NOT NULL DEFAULT ''`);
+  await pool.query(`ALTER TABLE seminar_reviews ADD COLUMN IF NOT EXISTS phone   VARCHAR(50)  NOT NULL DEFAULT ''`);
+  await pool.query(`ALTER TABLE seminar_reviews ADD COLUMN IF NOT EXISTS email   VARCHAR(200) NOT NULL DEFAULT ''`);
   console.log('DB 테이블 준비 완료');
 }
 
@@ -308,9 +317,18 @@ app.delete('/api/registrations/:id', adminLimiter, adminAuth, async (req, res) =
 // 세미나 후기를 DB에 저장합니다. (공개 엔드포인트 — QR 접속자용)
 // -------------------------------------------------------------
 app.post('/api/review', registerLimiter, async (req, res) => {
-  const { name, rating, content } = req.body;
+  const { name, company, dept, phone, email, rating, content } = req.body;
   const r = parseInt(rating, 10);
 
+  if (!name || !company || !dept || !phone || !email) {
+    return res.status(400).json({ success: false, message: '필수 항목이 누락되었습니다.' });
+  }
+  if (!/^0\d{8,10}$/.test(phone.replace(/-/g, ''))) {
+    return res.status(400).json({ success: false, message: '연락처 형식이 올바르지 않습니다.' });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ success: false, message: '이메일 형식이 올바르지 않습니다.' });
+  }
   if (!content || !content.trim()) {
     return res.status(400).json({ success: false, message: '후기 내용을 입력해 주세요.' });
   }
@@ -320,8 +338,8 @@ app.post('/api/review', registerLimiter, async (req, res) => {
 
   try {
     await pool.query(
-      'INSERT INTO seminar_reviews (name, rating, content) VALUES ($1, $2, $3)',
-      [name?.trim() || '익명', r, content.trim()]
+      'INSERT INTO seminar_reviews (name, company, dept, phone, email, rating, content) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+      [name.trim(), company.trim(), dept.trim(), phone.trim(), email.trim(), r, content.trim()]
     );
     res.json({ success: true });
   } catch (err) {
@@ -360,6 +378,10 @@ app.get('/api/reviews/export', adminLimiter, adminAuth, async (req, res) => {
     sheet.columns = [
       { header: 'No',     key: 'id',         width: 8  },
       { header: '이름',   key: 'name',        width: 15 },
+      { header: '회사명', key: 'company',     width: 25 },
+      { header: '부서',   key: 'dept',        width: 18 },
+      { header: '연락처', key: 'phone',       width: 18 },
+      { header: '이메일', key: 'email',       width: 30 },
       { header: '별점',   key: 'rating',      width: 8  },
       { header: '후기',   key: 'content',     width: 60 },
       { header: '작성일시', key: 'created_at', width: 22 },

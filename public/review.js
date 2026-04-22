@@ -1,19 +1,51 @@
+// STEP 1 → STEP 2 전환
+document.getElementById('btnNext').addEventListener('click', goToStep2);
+
+function goToStep2() {
+  const name    = document.getElementById('reviewName').value.trim();
+  const company = document.getElementById('reviewCompany').value.trim();
+  const dept    = document.getElementById('reviewDept').value.trim();
+  const phone   = document.getElementById('reviewPhone').value.trim();
+  const email   = document.getElementById('reviewEmail').value.trim();
+
+  if (!name)    return highlight('reviewName',    '이름을 입력해 주세요.');
+  if (!company) return highlight('reviewCompany', '회사명을 입력해 주세요.');
+  if (!dept)    return highlight('reviewDept',    '부서를 입력해 주세요.');
+
+  const phoneRaw = phone.replace(/-/g, '');
+  if (!/^0\d{8,10}$/.test(phoneRaw)) return highlight('reviewPhone', '올바른 연락처를 입력해 주세요.');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return highlight('reviewEmail', '올바른 이메일을 입력해 주세요.');
+
+  // 단계 전환
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step2').classList.add('active');
+  document.getElementById('dot1').classList.replace('active', 'done');
+  document.getElementById('line1').classList.add('done');
+  document.getElementById('dot2').classList.add('active');
+}
+
+function highlight(id, msg) {
+  const el = document.getElementById(id);
+  el.classList.add('error-field');
+  el.focus();
+  el.addEventListener('input', () => el.classList.remove('error-field'), { once: true });
+  alert(msg);
+}
+
+// STEP 2 제출
 document.getElementById('btnSubmitReview').addEventListener('click', submitReview);
 
 async function submitReview() {
-  const name    = document.getElementById('reviewName').value.trim();
-  const content = document.getElementById('reviewContent').value.trim();
-  const ratingEl = document.querySelector('input[name="rating"]:checked');
+  const ratingEl    = document.querySelector('input[name="rating"]:checked');
   const ratingError = document.getElementById('ratingError');
+  const content     = document.getElementById('reviewContent').value.trim();
 
-  // 별점 검증
   if (!ratingEl) {
     ratingError.style.display = 'block';
     return;
   }
   ratingError.style.display = 'none';
 
-  // 후기 내용 검증
   if (!content) {
     document.getElementById('reviewContent').focus();
     return;
@@ -23,11 +55,21 @@ async function submitReview() {
   btn.disabled    = true;
   btn.textContent = '제출 중...';
 
+  const payload = {
+    name:    document.getElementById('reviewName').value.trim(),
+    company: document.getElementById('reviewCompany').value.trim(),
+    dept:    document.getElementById('reviewDept').value.trim(),
+    phone:   document.getElementById('reviewPhone').value.trim(),
+    email:   document.getElementById('reviewEmail').value.trim(),
+    rating:  ratingEl.value,
+    content,
+  };
+
   try {
     const res = await fetch('/api/review', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ name, rating: ratingEl.value, content })
+      body:    JSON.stringify(payload),
     });
 
     if (res.ok) {
