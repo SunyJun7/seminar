@@ -14,16 +14,8 @@
       max-width: 520px;
       margin: 40px auto;
     }
-    .review-card h2 {
-      color: #1a237e;
-      font-size: 20px;
-      margin-bottom: 6px;
-    }
-    .review-card .subtitle {
-      color: #888;
-      font-size: 13px;
-      margin-bottom: 28px;
-    }
+    .review-card h2 { color: #1a237e; font-size: 20px; margin-bottom: 6px; }
+    .review-card .subtitle { color: #888; font-size: 13px; margin-bottom: 28px; }
 
     /* 단계 표시 */
     .step-indicator {
@@ -33,17 +25,10 @@
       margin-bottom: 28px;
     }
     .step-dot {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: #e0e0e0;
-      color: #999;
-      font-size: 12px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #e0e0e0; color: #999;
+      font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .step-dot.active { background: #1a237e; color: #fff; }
     .step-dot.done   { background: #00aac8; color: #fff; }
@@ -51,74 +36,42 @@
     .step-line.done { background: #00aac8; }
 
     /* 질문 블록 */
-    .question-block {
-      margin-bottom: 24px;
-    }
+    .question-block { margin-bottom: 24px; }
     .question-label {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1a237e;
-      margin-bottom: 10px;
-      line-height: 1.5;
-      word-break: keep-all;
+      font-size: 14px; font-weight: 700; color: #1a237e;
+      margin-bottom: 10px; line-height: 1.5; word-break: keep-all;
     }
-    .option-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+    .option-list { display: flex; flex-direction: column; gap: 8px; }
     .option-list label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 14px;
-      color: #333;
-      cursor: pointer;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: #333; cursor: pointer;
       padding: 10px 14px;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
+      border: 1px solid #e0e0e0; border-radius: 8px;
       transition: border-color 0.15s, background 0.15s;
     }
     .option-list label:hover { border-color: #1a237e; background: #f5f7ff; }
     .option-list input[type="radio"] { accent-color: #1a237e; width: 16px; height: 16px; flex-shrink: 0; }
-    .option-list input[type="radio"]:checked + span { font-weight: 700; color: #1a237e; }
     .option-list label:has(input:checked) { border-color: #1a237e; background: #f0f3ff; }
+    .option-list input[type="radio"]:checked + span { font-weight: 700; color: #1a237e; }
 
     textarea {
-      width: 100%;
-      min-height: 100px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 14px;
-      resize: vertical;
-      box-sizing: border-box;
-      font-family: inherit;
+      width: 100%; min-height: 100px;
+      border: 1px solid #ddd; border-radius: 8px;
+      padding: 12px; font-size: 14px; resize: vertical;
+      box-sizing: border-box; font-family: inherit;
     }
     textarea:focus { outline: none; border-color: #1a237e; }
 
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 8px;
-    }
+    .btn-row { display: flex; gap: 10px; margin-top: 8px; }
     .btn-back {
-      flex: 1;
-      padding: 13px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: #fff;
-      color: #666;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
+      flex: 1; padding: 13px; border: 1px solid #ddd; border-radius: 8px;
+      background: #fff; color: #666; font-size: 15px; font-weight: 700; cursor: pointer;
     }
     .btn-back:hover { background: #f5f5f5; }
     .btn-primary { flex: 2; }
 
     .step { display: none; }
     .step.active { display: block; }
-
     .q-error { color: #e53935; font-size: 12px; margin-top: 4px; display: none; }
   </style>
 </head>
@@ -131,8 +84,6 @@
         <div class="step-dot active" id="dot1">1</div>
         <div class="step-line" id="line1"></div>
         <div class="step-dot" id="dot2">2</div>
-        <div class="step-line" id="line2"></div>
-        <div class="step-dot" id="dot3">3</div>
       </div>
 
       <!-- ===== PART 1: 개인정보 ===== -->
@@ -164,12 +115,11 @@
         <button class="btn-primary" id="btnNext1">다음</button>
       </div>
 
-      <!-- ===== PART 2: 질문 1~4 ===== -->
+      <!-- ===== PART 2: 전체 질문 ===== -->
       <div class="step" id="step2">
         <h2>세미나 만족도 조사</h2>
-        <p class="subtitle">1 / 2 — 각 항목에 해당하는 답변을 선택해 주세요.</p>
+        <p class="subtitle">각 항목에 해당하는 답변을 선택해 주세요.</p>
 
-        <!-- Q1 -->
         <div class="question-block">
           <div class="question-label">Q1. 이번 세미나의 전반적인 만족도는 어떠셨습니까?</div>
           <div class="option-list">
@@ -182,7 +132,6 @@
           <div class="q-error" id="err-q1">답변을 선택해 주세요.</div>
         </div>
 
-        <!-- Q2 -->
         <div class="question-block">
           <div class="question-label">Q2. 세미나 주제(실시간 AI 오케스트레이션 및 AX)에 대한 관심도는 어느 정도입니까?</div>
           <div class="option-list">
@@ -195,7 +144,6 @@
           <div class="q-error" id="err-q2">답변을 선택해 주세요.</div>
         </div>
 
-        <!-- Q3 -->
         <div class="question-block">
           <div class="question-label">Q3. 세미나 내용이 현재 귀사의 업무 또는 조직 운영에 도움이 될 것이라 생각하십니까?</div>
           <div class="option-list">
@@ -206,7 +154,6 @@
           <div class="q-error" id="err-q3">답변을 선택해 주세요.</div>
         </div>
 
-        <!-- Q4 -->
         <div class="question-block">
           <div class="question-label">Q4. 세미나 참석 후 실시간 AI 오케스트레이션에 대한 이해도가 높아지셨습니까?</div>
           <div class="option-list">
@@ -217,18 +164,6 @@
           <div class="q-error" id="err-q4">답변을 선택해 주세요.</div>
         </div>
 
-        <div class="btn-row">
-          <button class="btn-back" id="btnBack2">이전</button>
-          <button class="btn-primary" id="btnNext2">다음</button>
-        </div>
-      </div>
-
-      <!-- ===== PART 3: 질문 6, 8, 9 ===== -->
-      <div class="step" id="step3">
-        <h2>세미나 만족도 조사</h2>
-        <p class="subtitle">2 / 2 — 마지막 질문입니다.</p>
-
-        <!-- Q6 -->
         <div class="question-block">
           <div class="question-label">Q6. 향후 스마트게이트와 AI/AX 관련 방문 미팅 의향이 있으십니까?</div>
           <div class="option-list">
@@ -238,7 +173,6 @@
           <div class="q-error" id="err-q6">답변을 선택해 주세요.</div>
         </div>
 
-        <!-- Q8 -->
         <div class="question-block">
           <div class="question-label">Q8. 귀사의 관련 솔루션 도입 계획은 언제쯤으로 예상하십니까?</div>
           <div class="option-list">
@@ -250,14 +184,13 @@
           <div class="q-error" id="err-q8">답변을 선택해 주세요.</div>
         </div>
 
-        <!-- Q9 -->
         <div class="question-block">
           <div class="question-label">Q9. 향후 추가로 듣고 싶은 주제나 스마트게이트에 바라는 개선 의견이 있다면 자유롭게 작성해 주십시오. <span style="font-weight:400;color:#888;font-size:12px;">(선택)</span></div>
           <textarea id="q9" placeholder="자유롭게 작성해 주세요."></textarea>
         </div>
 
         <div class="btn-row">
-          <button class="btn-back" id="btnBack3">이전</button>
+          <button class="btn-back" id="btnBack2">이전</button>
           <button class="btn-primary" id="btnSubmitReview">제출하기</button>
         </div>
       </div>

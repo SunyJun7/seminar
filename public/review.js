@@ -1,26 +1,4 @@
-// ===== 단계 이동 유틸 =====
-function goStep(from, to) {
-  document.getElementById('step' + from).classList.remove('active');
-  document.getElementById('step' + to).classList.add('active');
-
-  const fromDot = document.getElementById('dot' + from);
-  fromDot.classList.remove('active');
-  fromDot.classList.add('done');
-
-  if (to > from) {
-    document.getElementById('line' + from)?.classList.add('done');
-    document.getElementById('dot' + to).classList.add('active');
-  } else {
-    document.getElementById('line' + to)?.classList.remove('done');
-    document.getElementById('dot' + from).classList.remove('done');
-    document.getElementById('dot' + to).classList.remove('done');
-    document.getElementById('dot' + to).classList.add('active');
-  }
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ===== PART 1 → 2 =====
+// PART 1 → PART 2
 document.getElementById('btnNext1').addEventListener('click', () => {
   const name    = document.getElementById('reviewName').value.trim();
   const company = document.getElementById('reviewCompany').value.trim();
@@ -34,30 +12,27 @@ document.getElementById('btnNext1').addEventListener('click', () => {
   if (!/^0\d{8,10}$/.test(phone.replace(/-/g, ''))) return highlight('reviewPhone', '올바른 연락처를 입력해 주세요.');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))    return highlight('reviewEmail', '올바른 이메일을 입력해 주세요.');
 
-  goStep(1, 2);
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step2').classList.add('active');
+  document.getElementById('dot1').classList.replace('active', 'done');
+  document.getElementById('line1').classList.add('done');
+  document.getElementById('dot2').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-// ===== PART 2 → 3 =====
-document.getElementById('btnNext2').addEventListener('click', () => {
-  const required = ['q1', 'q2', 'q3', 'q4'];
-  let valid = true;
-  required.forEach(name => {
-    const checked = document.querySelector(`input[name="${name}"]:checked`);
-    const errEl   = document.getElementById('err-' + name);
-    if (!checked) { errEl.style.display = 'block'; valid = false; }
-    else          { errEl.style.display = 'none'; }
-  });
-  if (!valid) return;
-  goStep(2, 3);
+// PART 2 → PART 1 (이전)
+document.getElementById('btnBack2').addEventListener('click', () => {
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.add('active');
+  document.getElementById('dot2').classList.remove('active');
+  document.getElementById('line1').classList.remove('done');
+  document.getElementById('dot1').classList.replace('done', 'active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-document.getElementById('btnBack2').addEventListener('click', () => goStep(2, 1));
-
-// ===== PART 3 제출 =====
-document.getElementById('btnBack3').addEventListener('click', () => goStep(3, 2));
-
+// 제출
 document.getElementById('btnSubmitReview').addEventListener('click', async () => {
-  const required = ['q6', 'q8'];
+  const required = ['q1', 'q2', 'q3', 'q4', 'q6', 'q8'];
   let valid = true;
   required.forEach(name => {
     const checked = document.querySelector(`input[name="${name}"]:checked`);
