@@ -73,6 +73,26 @@
     .step { display: none; }
     .step.active { display: block; }
     .q-error { color: #e53935; font-size: 12px; margin-top: 4px; display: none; }
+
+    /* 상단 브랜드 영역 */
+    .brand-title {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      color: #003e74;
+      line-height: 1.5;
+      margin-bottom: 24px;
+      word-break: keep-all;
+    }
+    .brand-title .hl { color: #00aac8; }
+    .brand-logo {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .brand-logo img {
+      height: 32px;
+      object-fit: contain;
+    }
   </style>
 </head>
 <body>
@@ -88,6 +108,10 @@
 
       <!-- ===== PART 1: 개인정보 ===== -->
       <div class="step active" id="step1">
+        <p class="brand-title">
+          실시간 AI 오케스트레이션<br>
+          <span class="hl">Vantiq</span> × 스마트게이트가 제시하는 AX의 미래
+        </p>
         <h2>참석자 정보 입력</h2>
         <p class="subtitle">설문 전 아래 정보를 입력해 주세요. <span style="color:#e53935;">*</span> 는 필수 항목입니다.</p>
 
@@ -117,6 +141,9 @@
 
       <!-- ===== PART 2: 전체 질문 ===== -->
       <div class="step" id="step2">
+        <div class="brand-logo">
+          <img src="images/logo-smartgate.png" alt="SmartGate" />
+        </div>
         <h2>세미나 만족도 조사</h2>
         <p class="subtitle">각 항목에 해당하는 답변을 선택해 주세요.</p>
 
