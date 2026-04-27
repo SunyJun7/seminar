@@ -1,3 +1,9 @@
 node_modules/
 .env
 .claude/
+
+# 이메일 복붙용 임시 작업물
+public/email-source*.txt
+
+# 미사용 이미지 작업물
+public/images/vantiq x smartgate_*.png
