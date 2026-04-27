@@ -197,7 +197,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 성공: { success: true }
 // 실패: { success: false, message: '...' }
 // -------------------------------------------------------------
+// 사전등록 마감 시각 (KST)
+const REGISTRATION_DEADLINE = new Date('2026-04-27T14:00:00+09:00');
+
 app.post('/api/register', registerLimiter, async (req, res) => {
+  // 마감 시각 지났으면 거부
+  if (Date.now() >= REGISTRATION_DEADLINE.getTime()) {
+    return res.status(403).json({ success: false, message: '사전등록이 마감되었습니다.' });
+  }
+
   const { name, company, position, phone, email, interest } = req.body;
 
   // 필수 항목 서버 측 재검증 (프론트 우회 방지)

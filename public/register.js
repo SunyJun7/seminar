@@ -9,6 +9,26 @@
 //    id 를 바꾸면 검증이 동작하지 않으므로 수정하지 마세요.
 // =============================================================
 
+// 사전등록 마감 시각 (변경 가능)
+const REGISTRATION_DEADLINE = new Date('2026-04-27T14:00:00+09:00');
+
+// 마감 시각 지났으면 즉시 모달 표시 후 폼 비활성화
+(function checkDeadline() {
+  if (Date.now() < REGISTRATION_DEADLINE.getTime()) return;
+
+  const overlay = document.getElementById('closedOverlay');
+  if (overlay) overlay.style.display = 'flex';
+
+  // 폼 입력/제출 차단
+  document.querySelectorAll('#registerForm input, #registerForm button, #btnSubmit').forEach(el => {
+    el.disabled = true;
+  });
+
+  document.getElementById('btnClosedOk')?.addEventListener('click', () => {
+    location.href = 'index.html';
+  });
+})();
+
 // 필수 필드 목록 (위→아래 순서대로 검사됨)
 // ✏️ [수정 가능] label 의 텍스트만 변경 가능
 const REQUIRED_FIELDS = [
