@@ -74,30 +74,43 @@
     .step.active { display: block; }
     .q-error { color: #e53935; font-size: 12px; margin-top: 4px; display: none; }
 
-    /* 상단 브랜드 영역 */
-    .brand-title {
-      text-align: center;
-      font-size: 14px;
+    /* 상단 브랜드 헤더 */
+    .brand-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    .brand-header .brand-title {
+      font-size: 12px;
       font-weight: 800;
       color: #003e74;
-      line-height: 1.5;
-      margin-bottom: 24px;
+      line-height: 1.4;
       word-break: keep-all;
     }
-    .brand-title .hl { color: #00aac8; }
-    .brand-logo {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    .brand-logo img {
-      height: 32px;
+    .brand-header .brand-title .hl { color: #00aac8; }
+    .brand-header .brand-logo img {
+      height: 26px;
       object-fit: contain;
+      flex-shrink: 0;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="review-card">
+
+      <!-- 상단 브랜드 헤더 -->
+      <div class="brand-header">
+        <div class="brand-title">
+          실시간 AI 오케스트레이션<br>
+          <span class="hl">Vantiq</span> × 스마트게이트가 제시하는 AX의 미래
+        </div>
+        <div class="brand-logo">
+          <img src="images/logo-smartgate.png" alt="SmartGate" />
+        </div>
+      </div>
 
       <!-- 단계 표시 -->
       <div class="step-indicator">
@@ -108,10 +121,6 @@
 
       <!-- ===== PART 1: 개인정보 ===== -->
       <div class="step active" id="step1">
-        <p class="brand-title">
-          실시간 AI 오케스트레이션<br>
-          <span class="hl">Vantiq</span> × 스마트게이트가 제시하는 AX의 미래
-        </p>
         <h2>참석자 정보 입력</h2>
         <p class="subtitle">설문 전 아래 정보를 입력해 주세요. <span style="color:#e53935;">*</span> 는 필수 항목입니다.</p>
 
@@ -141,9 +150,6 @@
 
       <!-- ===== PART 2: 전체 질문 ===== -->
       <div class="step" id="step2">
-        <div class="brand-logo">
-          <img src="images/logo-smartgate.png" alt="SmartGate" />
-        </div>
         <h2>세미나 만족도 조사</h2>
         <p class="subtitle">각 항목에 해당하는 답변을 선택해 주세요.</p>
 
