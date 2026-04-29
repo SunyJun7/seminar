@@ -27,7 +27,7 @@ const ALLOWED_MIME = new Set([
 ]);
 const upload = multer({
   dest: DOWNLOADS_DIR,
-  limits: { fileSize: 50 * 1024 * 1024 },
+  limits: { fileSize: 100 * 1024 * 1024 },
   fileFilter(req, file, cb) {
     const ext = path.extname(file.originalname).toLowerCase();
     if (ALLOWED_MIME.has(file.mimetype) && (ext === '.pdf' || ext === '.zip')) {
