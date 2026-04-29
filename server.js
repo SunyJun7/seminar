@@ -17,15 +17,23 @@ const ExcelJS      = require('exceljs');            // Excel 파일 생성
 const DOWNLOADS_DIR = path.join(__dirname, 'public', 'downloads');
 if (!fs.existsSync(DOWNLOADS_DIR)) fs.mkdirSync(DOWNLOADS_DIR, { recursive: true });
 
-// multer 설정 — PDF만 허용, 파일당 50MB 제한
+// multer 설정 — PDF / ZIP 허용, 파일당 50MB 제한
+const ALLOWED_MIME = new Set([
+  'application/pdf',
+  'application/zip',
+  'application/x-zip-compressed',
+  'application/x-zip',
+  'application/octet-stream', // 일부 브라우저는 zip을 octet-stream으로 보냄
+]);
 const upload = multer({
   dest: DOWNLOADS_DIR,
   limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter(req, file, cb) {
-    if (file.mimetype === 'application/pdf') {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ALLOWED_MIME.has(file.mimetype) && (ext === '.pdf' || ext === '.zip')) {
       cb(null, true);
     } else {
-      cb(new Error('PDF 파일만 업로드할 수 있습니다.'));
+      cb(new Error('PDF 또는 ZIP 파일만 업로드할 수 있습니다.'));
     }
   }
 });
